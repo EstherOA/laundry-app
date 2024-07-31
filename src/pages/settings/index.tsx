@@ -1,11 +1,11 @@
 import { Box, Text } from "@chakra-ui/react";
 
-const Reports = () => {
+const Settings = () => {
   return (
     <Box>
-      <Text>Reports</Text>
+      <Text>Settings</Text>
     </Box>
   );
 };
 
-export default Reports;
+export default Settings;
