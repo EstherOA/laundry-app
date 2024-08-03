@@ -18,7 +18,12 @@ const ViewInventory = () => {
           icon={<ArrowBackIcon />}
           variant="unstyled"
         />
-        <Text>Inventory #20</Text>
+        <Flex>
+          <Text>Inventory #20</Text>
+          <Flex>
+            <Text>Out of Stock</Text>
+          </Flex>
+        </Flex>
       </Flex>
       <SimpleGrid columns={4}>
         <Flex flexDir="column">

@@ -1,7 +1,6 @@
 import { Grid, GridItem } from "@chakra-ui/react";
 import Navbar from "../navbar";
 import Sidebar from "../sidebar";
-import { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
@@ -11,7 +10,7 @@ const Layout = () => {
     "sidenav main"`}
       gridTemplateRows={"76px 1fr"}
       gridTemplateColumns={"300px 1fr"}
-      h="100%"
+      minH="100vh"
     >
       <GridItem area={"header"}>
         <Navbar />
@@ -19,7 +18,7 @@ const Layout = () => {
       <GridItem area={"sidenav"}>
         <Sidebar />
       </GridItem>
-      <GridItem area={"main"}>
+      <GridItem area={"main"} overflowY="scroll">
         <Outlet />
       </GridItem>
     </Grid>

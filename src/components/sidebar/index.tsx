@@ -38,7 +38,7 @@ const sideItems = [
     icon: CustomerIcon,
   },
   {
-    title: "Report",
+    title: "Reports",
     href: "/reports",
     icon: DashboardIcon,
   },
@@ -67,6 +67,7 @@ const Sidebar = () => {
       justifyContent="space-between"
       paddingTop="15%"
       color="white"
+      h="100%"
     >
       <Box>
         {sideItems.map((item, i) => (
@@ -78,7 +79,6 @@ const Sidebar = () => {
             mb={4}
             w="100%"
             justifyContent="flex-start"
-            _active={{}}
             _hover={{ backgroundColor: "#2770B5" }}
             transition="background-color ease 0.25s"
             alignItems="center"

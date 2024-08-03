@@ -19,7 +19,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type OrderStatus = "pending" | "cancelled" | "overdue" | "complete";
 type PaymentStatus = "none" | "partial" | "full";
@@ -37,6 +37,7 @@ type Order = {
 
 const Orders = () => {
   const columnHelper = createColumnHelper<Order>();
+  const navigate = useNavigate();
 
   const [data, setData] = useState<Order[]>([
     {
@@ -44,8 +45,8 @@ const Orders = () => {
       items: "1x Shirt, 2x Blouse, 1x Jeans",
       total: 300,
       orderStatus: "pending",
-      customerName: "John",
-      createdBy: "Bill",
+      customerName: "John Doe",
+      createdBy: "Bill Rogan",
       createdAt: "12-03-2024",
       paymentStatus: "none",
     },
@@ -54,8 +55,8 @@ const Orders = () => {
       items: "1x Shirt, 2x Blouse, 1x Jeans",
       total: 300,
       orderStatus: "pending",
-      customerName: "John",
-      createdBy: "Bill",
+      customerName: "John Doe",
+      createdBy: "Bill Rogan",
       createdAt: "12-03-2024",
       paymentStatus: "none",
     },
@@ -64,8 +65,8 @@ const Orders = () => {
       items: "1x Shirt, 2x Blouse, 1x Jeans",
       total: 300,
       orderStatus: "pending",
-      customerName: "John",
-      createdBy: "Bill",
+      customerName: "John Doe",
+      createdBy: "Bill Rogan",
       createdAt: "12-03-2024",
       paymentStatus: "none",
     },
@@ -121,20 +122,20 @@ const Orders = () => {
   });
 
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3}>
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
       <Flex justifyContent="space-between">
         <Flex>
           <Text>Filter</Text>
           <Icon />
         </Flex>
-        <InputGroup maxW="240px" h="48px">
+        <InputGroup maxW="240px" h="56px">
           <InputLeftElement>
             <SearchIcon />
           </InputLeftElement>
           <Input placeholder="Search" />
         </InputGroup>
       </Flex>
-      <Box>
+      <Box mb="70px" mt="48px">
         <table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -154,7 +155,7 @@ const Orders = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} onClick={() => navigate(`/orders/${row.id}`)}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -165,11 +166,13 @@ const Orders = () => {
           </tbody>
         </table>
       </Box>
-      <Box>
-        <Button>
-          <Link to="/orders/new">Create New</Link>
+      <Flex justify="flex-end">
+        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>
+          <Link to="/orders/new" style={{ color: "white" }}>
+            Create New
+          </Link>
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };

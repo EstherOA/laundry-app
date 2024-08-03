@@ -90,7 +90,7 @@ const Customers = () => {
   });
 
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3}>
+    <Box mx={4} my={5} boxShadow="md" px={4} py={3} h="100%">
       <Flex justifyContent="space-between">
         <Flex>
           <Text>Filter</Text>
@@ -103,13 +103,18 @@ const Customers = () => {
           <Input placeholder="Search" />
         </InputGroup>
       </Flex>
-      <Box>
-        <table>
-          <thead>
+      <Box my="70px">
+        <table
+          style={{
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          <thead style={{ backgroundColor: "#F0F0F1" }}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
+                  <th key={header.id} style={{ padding: "10px 14px" }}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -125,7 +130,7 @@ const Customers = () => {
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
+                  <td key={cell.id} style={{ padding: "10px 14px" }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -134,11 +139,13 @@ const Customers = () => {
           </tbody>
         </table>
       </Box>
-      <Box>
-        <Button>
-          <Link to="/customers/new">Create New</Link>
+      <Flex justify="flex-end">
+        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>
+          <Link to="/customers/new" style={{ color: "white" }}>
+            Create New
+          </Link>
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };

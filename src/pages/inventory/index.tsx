@@ -22,7 +22,7 @@ import ViewInventory from "./ViewInventory";
 import EditInventory from "./EditInventory";
 
 type PaymentMode = "momo" | "cash";
-type ItemStatus = "inStock" | "lowStock" | "outOfStock";
+type ItemStatus = "InStock" | "LowStock" | "OutOfStock";
 
 type Inventory = {
   id: string;
@@ -48,7 +48,7 @@ const Inventory = () => {
       paymentMode: "cash",
       purchasedBy: "John Doe",
       datePurchased: "12-03-2024",
-      status: "inStock",
+      status: "InStock",
     },
     {
       id: "2",
@@ -59,7 +59,7 @@ const Inventory = () => {
       paymentMode: "cash",
       purchasedBy: "Billy Rogan",
       datePurchased: "12-03-2024",
-      status: "lowStock",
+      status: "LowStock",
     },
     {
       id: "2",
@@ -70,7 +70,7 @@ const Inventory = () => {
       paymentMode: "momo",
       purchasedBy: "Jane Doe",
       datePurchased: "12-03-2024",
-      status: "outOfStock",
+      status: "OutOfStock",
     },
   ]);
 
