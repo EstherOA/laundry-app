@@ -1,56 +1,91 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, IconButton, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  SimpleGrid,
+  Text,
+} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const ViewCustomer = () => {
+  const navigate = useNavigate();
+
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} textAlign="center">
-      <Flex w="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      <Flex
+        w="100%"
+        justify="center"
+        alignItems="center"
+        mb="20px"
+        position="relative"
+      >
         <IconButton
           aria-label="go back"
-          icon={<ArrowBackIcon />}
-          variant="unstyled"
+          as={ArrowBackIcon}
+          w="36px"
+          position="absolute"
+          h="28px"
+          left="150px"
+          variant="ghost"
+          onClick={() => {
+            navigate("/services");
+          }}
+          cursor="pointer"
         />
-        <Text>Customer #20</Text>
+        <Text fontSize="28px" fontWeight="semibold" mb="32px">
+          Customer #20
+        </Text>
       </Flex>
       <Box>
-        <Flex>
-          <Flex flexDir="column">
-            <Text>Name</Text>
+        <SimpleGrid columns={3} gap={10}>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Full Name</Text>
             <Text>Shirt</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Phone Number</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Phone Number</Text>
             <Text>Washing</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Address</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Address</Text>
             <Text>2 Days</Text>
           </Flex>
-        </Flex>
-        <Flex>
+        </SimpleGrid>
+        <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column">
-            <Text>Landmark</Text>
+            <Text textStyle="infoTitle">Landmark</Text>
             <Text>30</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Delivery Notes</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Delivery Notes</Text>
             <Text>Adult shirt male</Text>
           </Flex>
-        </Flex>
-        <Flex>
-          <Flex flexDir="column">
-            <Text>Created At</Text>
+        </SimpleGrid>
+        <SimpleGrid columns={3} gap={10} mt={10}>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Created At</Text>
             <Text>13th May, 2024</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Last Updated</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Last Updated</Text>
             <Text>13th May, 2024</Text>
           </Flex>
-        </Flex>
+        </SimpleGrid>
       </Box>
-      <Flex justifyContent="flex-end">
-        <Button>Edit</Button>
-        <Button>Delete</Button>
+      <Flex justifyContent="flex-end" gap={4}>
+        <Button
+          bgColor="#43BE57"
+          _hover={{ bgColor: "#007B23" }}
+          color="white"
+          onClick={() => navigate("/customers/20/edit")}
+        >
+          Edit
+        </Button>
+        <Button bgColor="#FF0000" _hover={{ bgColor: "#8C0000" }} color="white">
+          Delete
+        </Button>
       </Flex>
     </Box>
   );

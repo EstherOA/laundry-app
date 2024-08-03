@@ -1,56 +1,91 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, IconButton, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  SimpleGrid,
+  Text,
+} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const ViewService = () => {
+  const navigate = useNavigate();
+
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} textAlign="center">
-      <Flex w="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      <Flex
+        w="100%"
+        justify="center"
+        alignItems="center"
+        mb="20px"
+        position="relative"
+      >
         <IconButton
           aria-label="go back"
-          icon={<ArrowBackIcon />}
-          variant="unstyled"
+          as={ArrowBackIcon}
+          w="36px"
+          position="absolute"
+          h="28px"
+          left="150px"
+          variant="ghost"
+          onClick={() => {
+            navigate("/services");
+          }}
+          cursor="pointer"
         />
-        <Text>Service #20</Text>
+        <Text fontSize="28px" fontWeight="semibold" mb="32px">
+          Service #20
+        </Text>
       </Flex>
       <Box>
-        <Flex>
-          <Flex flexDir="column">
-            <Text>Item</Text>
+        <SimpleGrid columns={3} gap={10}>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Item Name</Text>
             <Text>Shirt</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Service Type</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Service Type</Text>
             <Text>Washing</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Average Duration</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Average Duration</Text>
             <Text>2 Days</Text>
           </Flex>
-        </Flex>
-        <Flex>
-          <Flex flexDir="column">
-            <Text>Price</Text>
-            <Text>30</Text>
+        </SimpleGrid>
+        <SimpleGrid columns={3} gap={10} mt={10}>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Price</Text>
+            <Text>30.00</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Description</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Description</Text>
             <Text>Adult shirt male</Text>
           </Flex>
-        </Flex>
-        <Flex>
-          <Flex flexDir="column">
-            <Text>Created At</Text>
+        </SimpleGrid>
+        <SimpleGrid columns={3} gap={10} mt={10}>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Created At</Text>
             <Text>13th May, 2024</Text>
           </Flex>
-          <Flex flexDir="column">
-            <Text>Last Updated</Text>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Last Updated</Text>
             <Text>13th May, 2024</Text>
           </Flex>
-        </Flex>
+        </SimpleGrid>
       </Box>
-      <Flex justifyContent="flex-end">
-        <Button>Edit</Button>
-        <Button>Delete</Button>
+      <Flex justifyContent="flex-end" gap={4}>
+        <Button
+          bgColor="#43BE57"
+          _hover={{ bgColor: "#007B23" }}
+          color="white"
+          onClick={() => navigate("/services/20/edit")}
+        >
+          Edit
+        </Button>
+        <Button bgColor="#FF0000" _hover={{ bgColor: "#8C0000" }} color="white">
+          Delete
+        </Button>
       </Flex>
     </Box>
   );

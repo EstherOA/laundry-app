@@ -9,46 +9,65 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const CreateCustomer = () => {
+  const navigate = useNavigate();
+
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} textAlign="center">
-      <Flex w="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      <Flex
+        w="100%"
+        justify="center"
+        alignItems="center"
+        mb="20px"
+        position="relative"
+      >
         <IconButton
           aria-label="go back"
-          icon={<ArrowBackIcon />}
-          variant="unstyled"
+          as={ArrowBackIcon}
+          w="36px"
+          position="absolute"
+          h="28px"
+          left="150px"
+          variant="ghost"
+          onClick={() => {
+            navigate("/customers");
+          }}
+          cursor="pointer"
         />
-        <Text>Add New Customer</Text>
+        <Text textStyle="h1">Add New Customer</Text>
       </Flex>
-      <SimpleGrid columns={2}>
+      <SimpleGrid columns={2} gap={10} mt={10}>
         <Flex flexDir="column">
-          <Text>First Name</Text>
+          <Text textStyle="formLabel">First Name</Text>
           <Input />
         </Flex>
         <Flex flexDir="column">
-          <Text>Last Name</Text>
+          <Text textStyle="formLabel">Last Name</Text>
           <Input />
         </Flex>
         <Flex flexDir="column">
-          <Text>Phone Number</Text>
+          <Text textStyle="formLabel">Phone Number</Text>
           <Input />
         </Flex>
         <Flex flexDir="column" justify="space-between">
-          <Text>Address</Text>
+          <Text textStyle="formLabel">Address</Text>
           <Input />
         </Flex>
         <Flex flexDir="column">
-          <Text>Landmark</Text>
+          <Text textStyle="formLabel">Landmark</Text>
           <Textarea />
         </Flex>
         <Flex flexDir="column">
-          <Text>Delivery Notes</Text>
+          <Text textStyle="formLabel">Delivery Notes</Text>
           <Textarea />
         </Flex>
       </SimpleGrid>
-      <Flex justifyContent="flex-end">
-        <Button>Submit</Button>
+      <Flex justifyContent="flex-end" mt={10}>
+        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }} color="white">
+          Submit
+        </Button>
       </Flex>
     </Box>
   );

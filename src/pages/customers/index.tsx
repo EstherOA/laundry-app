@@ -16,7 +16,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CreateCustomer from "./CreateCustomer";
 import EditCustomer from "./EditCustomer";
 import ViewCustomer from "./ViewCustomer";
@@ -31,6 +31,8 @@ type Customer = {
 
 const Customers = () => {
   const columnHelper = createColumnHelper<Customer>();
+  const navigate = useNavigate();
+
   const [data, setData] = useState<Customer[]>([
     {
       id: "0",
@@ -90,31 +92,26 @@ const Customers = () => {
   });
 
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} h="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
       <Flex justifyContent="space-between">
         <Flex>
           <Text>Filter</Text>
           <Icon />
         </Flex>
-        <InputGroup maxW="240px" h="48px">
+        <InputGroup maxW="240px" h="56px">
           <InputLeftElement>
             <SearchIcon />
           </InputLeftElement>
           <Input placeholder="Search" />
         </InputGroup>
       </Flex>
-      <Box my="70px">
-        <table
-          style={{
-            width: "100%",
-            textAlign: "center",
-          }}
-        >
-          <thead style={{ backgroundColor: "#F0F0F1" }}>
+      <Box mb="70px" mt="48px">
+        <table>
+          <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} style={{ padding: "10px 14px" }}>
+                  <th key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -128,9 +125,9 @@ const Customers = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} onClick={() => navigate(`/customers/${row.id}`)}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} style={{ padding: "10px 14px" }}>
+                  <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

@@ -18,7 +18,7 @@ const Layout = () => {
       <GridItem area={"sidenav"}>
         <Sidebar />
       </GridItem>
-      <GridItem area={"main"} overflowY="scroll">
+      <GridItem area={"main"} overflowY="auto">
         <Outlet />
       </GridItem>
     </Grid>
