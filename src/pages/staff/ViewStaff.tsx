@@ -8,81 +8,105 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const ViewStaff = () => {
+  const navigate = useNavigate();
+
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} textAlign="center">
-      <Flex w="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      <Flex
+        w="100%"
+        justify="center"
+        alignItems="center"
+        mb="20px"
+        position="relative"
+      >
         <IconButton
           aria-label="go back"
-          icon={<ArrowBackIcon />}
-          variant="unstyled"
+          as={ArrowBackIcon}
+          w="36px"
+          position="absolute"
+          h="28px"
+          left="150px"
+          variant="ghost"
+          onClick={() => {
+            navigate("/staff");
+          }}
+          cursor="pointer"
         />
-        <Text>Staff #20</Text>
+        <Text fontSize="28px" fontWeight="semibold" mb="32px">
+          Customer #20
+        </Text>
       </Flex>
-      <SimpleGrid columns={4}>
-        <Flex flexDir="column">
-          <Text>First Name</Text>
-          <Text>Shirt</Text>
+      <SimpleGrid columns={4} gap={10}>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Full Name</Text>
+          <Text>John Doe</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Last Name</Text>
-          <Text>Washing</Text>
-        </Flex>
-        <Flex flexDir="column">
-          <Text>Phone Number</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Phone Number</Text>
           <Text>2 Days</Text>
         </Flex>
-        <Flex flexDir="column">
+        <Flex flexDir="column" gap={1}>
           <Flex>
-            <Text>Initial Password</Text>
+            <Text textStyle="infoTitle">Initial Password</Text>
             <Icon />
           </Flex>
           <Text>30</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Role</Text>
-          <Text>Adult shirt male</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Role</Text>
+          <Text>Admin</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>SSNIT</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">SSNIT</Text>
           <Text>1123</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>TIN</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">TIN</Text>
           <Text>1123</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Date Commenced</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Date Commenced</Text>
           <Text>13th May, 2024</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Salary</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Salary</Text>
           <Text>1123</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Shift</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Shift</Text>
           <Text>1123</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Contract</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Contract</Text>
           <Flex>
             <Text>kofi_contract.pdf</Text>
             <Icon />
           </Flex>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Created At</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Created At</Text>
           <Text>13th May, 2024</Text>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Last Updated</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="infoTitle">Last Updated</Text>
           <Text>13th May, 2024</Text>
         </Flex>
       </SimpleGrid>
-      <Flex justifyContent="flex-end">
-        <Button>Edit</Button>
-        <Button>Delete</Button>
+      <Flex justifyContent="flex-end" gap={4} mt="64px">
+        <Button
+          bgColor="#43BE57"
+          _hover={{ bgColor: "#007B23" }}
+          color="white"
+          onClick={() => navigate("/staff/20/edit")}
+        >
+          Edit
+        </Button>
+        <Button bgColor="#FF0000" _hover={{ bgColor: "#8C0000" }} color="white">
+          Delete
+        </Button>
       </Flex>
     </Box>
   );

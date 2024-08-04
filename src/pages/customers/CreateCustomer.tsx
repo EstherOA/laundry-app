@@ -39,27 +39,27 @@ const CreateCustomer = () => {
         <Text textStyle="h1">Add New Customer</Text>
       </Flex>
       <SimpleGrid columns={2} gap={10} mt={10}>
-        <Flex flexDir="column">
+        <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">First Name</Text>
           <Input />
         </Flex>
-        <Flex flexDir="column">
+        <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Last Name</Text>
           <Input />
         </Flex>
-        <Flex flexDir="column">
+        <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Phone Number</Text>
           <Input />
         </Flex>
-        <Flex flexDir="column" justify="space-between">
+        <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Address</Text>
           <Input />
         </Flex>
-        <Flex flexDir="column">
+        <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Landmark</Text>
           <Textarea />
         </Flex>
-        <Flex flexDir="column">
+        <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Delivery Notes</Text>
           <Textarea />
         </Flex>

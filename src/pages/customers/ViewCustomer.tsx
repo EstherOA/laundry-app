@@ -74,7 +74,7 @@ const ViewCustomer = () => {
           </Flex>
         </SimpleGrid>
       </Box>
-      <Flex justifyContent="flex-end" gap={4}>
+      <Flex justifyContent="flex-end" gap={4} mt={10}>
         <Button
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}

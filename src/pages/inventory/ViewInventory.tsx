@@ -8,72 +8,98 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const ViewInventory = () => {
+  const navigate = useNavigate();
+
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} textAlign="center">
-      <Flex w="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      <Flex
+        w="100%"
+        justify="center"
+        alignItems="center"
+        mb="20px"
+        position="relative"
+      >
         <IconButton
           aria-label="go back"
-          icon={<ArrowBackIcon />}
-          variant="unstyled"
+          as={ArrowBackIcon}
+          w="36px"
+          position="absolute"
+          h="28px"
+          left="150px"
+          variant="ghost"
+          onClick={() => {
+            navigate("/services");
+          }}
+          cursor="pointer"
         />
+        <Text fontSize="28px" fontWeight="semibold" mb="32px">
+          Customer #20
+        </Text>
         <Flex>
-          <Text>Inventory #20</Text>
-          <Flex>
-            <Text>Out of Stock</Text>
-          </Flex>
+          <Text>Out of Stock</Text>
         </Flex>
       </Flex>
-      <SimpleGrid columns={4}>
+      <SimpleGrid columns={4} gap={10}>
         <Flex flexDir="column">
-          <Text>Item Name</Text>
+          <Text textStyle="infoTitle">Item Name</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Description</Text>
+          <Text textStyle="infoTitle">Description</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Price</Text>
+          <Text textStyle="infoTitle">Price</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Quantity</Text>
+          <Text textStyle="infoTitle">Quantity</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Purchased By</Text>
+          <Text textStyle="infoTitle">Purchased By</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Vendor</Text>
+          <Text textStyle="infoTitle">Vendor</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Date Purchased</Text>
+          <Text textStyle="infoTitle">Date Purchased</Text>
+          <Text>13th May, 2024</Text>
+        </Flex>
+        <Flex flexDir="column">
+          <Text textStyle="infoTitle">Payment Mode</Text>
+          <Text>Momo</Text>
+        </Flex>
+        <Flex flexDir="column">
+          <Text textStyle="infoTitle">Payment Receipt</Text>
           <Text>Shirt</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Payment Mode</Text>
-          <Text>Shirt</Text>
+          <Text textStyle="infoTitle">Date Recorded</Text>
+          <Text>13th May, 2024</Text>
         </Flex>
         <Flex flexDir="column">
-          <Text>Payment Receipt</Text>
-          <Text>Shirt</Text>
-        </Flex>
-        <Flex flexDir="column">
-          <Text>Date Recorded</Text>
-          <Text>Shirt</Text>
-        </Flex>
-        <Flex flexDir="column">
-          <Text>Last Updated</Text>
-          <Text>Shirt</Text>
+          <Text textStyle="infoTitle">Last Updated</Text>
+          <Text>13th May, 2024</Text>
         </Flex>
       </SimpleGrid>
-      <Flex justifyContent="flex-end">
-        <Button>Edit</Button>
-        <Button>Delete</Button>
+      <Flex justifyContent="flex-end" gap={4}>
+        <Button
+          bgColor="#43BE57"
+          _hover={{ bgColor: "#007B23" }}
+          color="white"
+          onClick={() => navigate("/inventory/20/edit")}
+        >
+          Edit
+        </Button>
+        <Button bgColor="#FF0000" _hover={{ bgColor: "#8C0000" }} color="white">
+          Delete
+        </Button>
       </Flex>
     </Box>
   );

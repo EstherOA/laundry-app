@@ -16,7 +16,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CreateStaff from "./CreateStaff";
 import ViewStaff from "./ViewStaff";
 import EditStaff from "./EditStaff";
@@ -36,6 +36,8 @@ type Staff = {
 
 const Staff = () => {
   const columnHelper = createColumnHelper<Staff>();
+  const navigate = useNavigate();
+
   const [data, setData] = useState<Staff[]>([
     {
       id: "0",
@@ -119,20 +121,20 @@ const Staff = () => {
   });
 
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3}>
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
       <Flex justifyContent="space-between">
         <Flex>
           <Text>Filter</Text>
           <Icon />
         </Flex>
-        <InputGroup maxW="240px" h="48px">
+        <InputGroup maxW="240px" h="56px">
           <InputLeftElement>
             <SearchIcon />
           </InputLeftElement>
           <Input placeholder="Search" />
         </InputGroup>
       </Flex>
-      <Box>
+      <Box mb="70px" mt="48px">
         <table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -152,7 +154,7 @@ const Staff = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} onClick={() => navigate(`/staff/${row.id}`)}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -163,11 +165,13 @@ const Staff = () => {
           </tbody>
         </table>
       </Box>
-      <Box>
-        <Button>
-          <Link to="/staff/new">Create New</Link>
+      <Flex justify="flex-end">
+        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>
+          <Link to="/staff/new" style={{ color: "white" }}>
+            Create New
+          </Link>
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };

@@ -1,5 +1,13 @@
 import { TriangleDownIcon } from "@chakra-ui/icons";
-import { Avatar, Flex, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from "@chakra-ui/react";
 
 const Navbar = () => {
   return (
@@ -19,7 +27,15 @@ const Navbar = () => {
       <Flex alignItems="center" gap={2}>
         <Text>Ama</Text>
         <Avatar />
-        <TriangleDownIcon />
+        <Menu>
+          <MenuButton as={TriangleDownIcon} />
+          <MenuList minW="120px" textAlign="center">
+            <MenuItem color="black" w="100%">
+              Profile
+            </MenuItem>
+            <MenuItem color="red">Logout</MenuItem>
+          </MenuList>
+        </Menu>
       </Flex>
     </Flex>
   );

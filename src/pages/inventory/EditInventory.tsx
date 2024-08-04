@@ -5,62 +5,89 @@ import {
   Flex,
   IconButton,
   Input,
+  Select,
   SimpleGrid,
   Text,
   Textarea,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const EditInventory = () => {
+  const navigate = useNavigate();
+
   return (
-    <Box mx={4} my={5} boxShadow="md" px={4} py={3} textAlign="center">
-      <Flex w="100%">
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      <Flex
+        w="100%"
+        justify="center"
+        alignItems="center"
+        mb="20px"
+        position="relative"
+      >
         <IconButton
           aria-label="go back"
-          icon={<ArrowBackIcon />}
-          variant="unstyled"
+          as={ArrowBackIcon}
+          w="36px"
+          position="absolute"
+          h="28px"
+          left="150px"
+          variant="ghost"
+          onClick={() => {
+            navigate("/inventory");
+          }}
+          cursor="pointer"
         />
-        <Text>Edit Item #20</Text>
+        <Text textStyle="h1">Edit Item #20</Text>
       </Flex>
-      <SimpleGrid columns={3}>
-        <Flex flexDir="column">
-          <Text>Item Name</Text>
+      <SimpleGrid columns={3} gap={10} mt={10}>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Item Name</Text>
           <Input />
         </Flex>
-        <Flex flexDir="column">
-          <Text>Price</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Price</Text>
+          <Input type="number" />
+        </Flex>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Quantity</Text>
+          <Input type="number" />
+        </Flex>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Purchased By</Text>
+          <Select h="32px" fontSize="14px" placeholder="Select assignee">
+            <option value="option1">John Doe</option>
+            <option value="option2">Jane Doe</option>
+            <option value="option3">Billy Rogan</option>
+          </Select>
+        </Flex>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Vendor</Text>
           <Input />
         </Flex>
-        <Flex flexDir="column">
-          <Text>Quantity</Text>
-          <Input />
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Date Purchased</Text>
+          <Input type="date" />
         </Flex>
-        <Flex flexDir="column">
-          <Text>Purchased By</Text>
-          <Input />
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Payment Mode</Text>
+          <Select h="32px" fontSize="14px" placeholder="Select payment mode">
+            <option value="option1">Momo</option>
+            <option value="option2">Cash</option>
+          </Select>
         </Flex>
-        <Flex flexDir="column">
-          <Text>Vendor</Text>
-          <Input />
-        </Flex>
-        <Flex flexDir="column">
-          <Text>Date Purchased</Text>
-          <Input />
-        </Flex>
-        <Flex flexDir="column">
-          <Text>Payment Mode</Text>
-          <Input />
-        </Flex>
-        <Flex flexDir="column">
-          <Text>Description</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Description</Text>
           <Textarea />
         </Flex>
-        <Flex flexDir="column">
-          <Text>Receipt</Text>
+        <Flex flexDir="column" gap={1}>
+          <Text textStyle="formLabel">Receipt</Text>
           <Input />
         </Flex>
       </SimpleGrid>
-      <Flex justifyContent="flex-end">
-        <Button>Submit</Button>
+      <Flex justifyContent="flex-end" mt={10}>
+        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }} color="white">
+          Submit
+        </Button>
       </Flex>
     </Box>
   );
