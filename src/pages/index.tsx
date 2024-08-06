@@ -21,3 +21,4 @@ export {
 } from "./inventory";
 export { default as Reports } from "./reports";
 export { default as Staff, CreateStaff, EditStaff, ViewStaff } from "./staff";
+export { Login } from "./auth";

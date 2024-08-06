@@ -14,6 +14,7 @@ import {
   EditService,
   EditStaff,
   Inventory,
+  Login,
   Orders,
   Reports,
   Services,
@@ -154,7 +155,15 @@ const router = createBrowserRouter([
         path: "/reports",
         element: <Reports />,
       },
+      {
+        path: "/profile",
+        element: <Login />,
+      },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
 

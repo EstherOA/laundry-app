@@ -3,7 +3,7 @@ import {
   Box,
   Button,
   Flex,
-  Icon,
+  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import CreateCustomer from "./CreateCustomer";
 import EditCustomer from "./EditCustomer";
 import ViewCustomer from "./ViewCustomer";
+import FilterIcon from "../../assets/filter.svg";
 
 type Customer = {
   id: string;
@@ -94,9 +95,9 @@ const Customers = () => {
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
       <Flex justifyContent="space-between">
-        <Flex>
-          <Text>Filter</Text>
-          <Icon />
+        <Flex justify="center" align="center">
+          <Text mr={1}>Filter</Text>
+          <Image src={FilterIcon} boxSize="20px" />
         </Flex>
         <InputGroup maxW="240px" h="56px">
           <InputLeftElement>

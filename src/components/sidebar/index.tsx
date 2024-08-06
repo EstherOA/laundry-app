@@ -83,30 +83,39 @@ const Sidebar = () => {
       h="100%"
     >
       <Box>
-        {sideItems.map((item, i) => (
-          <Flex
-            key={i}
-            onClick={() => handleClick(item.title, item.href)}
-            cursor="pointer"
-            py={2}
-            mb={4}
-            w="100%"
-            justifyContent="flex-start"
-            _hover={{
-              backgroundColor: "#2770B5",
-              borderLeft: "5px solid #A5CCEF",
-            }}
-            transition="all ease-in 0.1s"
-            alignItems="center"
-            gap={2}
-            pl={5}
-          >
-            <Image src={item.icon} />
-            <Text fontWeight={600}>{item.title}</Text>
-          </Flex>
-        ))}
+        {sideItems.map((item, i) => {
+          const isActive = item.title === currentPage;
+          return (
+            <Flex
+              key={i}
+              onClick={() => handleClick(item.title, item.href)}
+              cursor="pointer"
+              py={2}
+              mb={4}
+              w="100%"
+              justifyContent="flex-start"
+              _hover={{
+                backgroundColor: "#2770B5",
+                borderLeft: "5px solid #A5CCEF",
+              }}
+              background={
+                isActive
+                  ? "linear-gradient(to right, #FF6A54, #FF6A54 33%, #F3705A 54%, #D87D69 68%)"
+                  : "transparent"
+              }
+              borderLeft={isActive ? "5px solid #A5CCEF" : "none"}
+              transition="all ease-in 0.1s"
+              alignItems="center"
+              gap={2}
+              pl={5}
+            >
+              <Image src={item.icon} />
+              <Text fontWeight={600}>{item.title}</Text>
+            </Flex>
+          );
+        })}
       </Box>
-      <Flex width="300px" justifyContent="center">
+      <Flex width="260px" height="230px" justifyContent="center">
         <Image src={getPageIllustration()} />
       </Flex>
     </Flex>

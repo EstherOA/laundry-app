@@ -87,7 +87,7 @@ const EditStaff = () => {
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Contract</Text>
-          <Input />
+          <Input type="file" />
         </Flex>
       </SimpleGrid>
       <Flex justifyContent="flex-end" mt={10}>

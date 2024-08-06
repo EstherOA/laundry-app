@@ -57,6 +57,8 @@ const Dashboard = () => {
         <GridItem>
           <Card>
             <CardHeader
+              borderTopLeftRadius="0.375rem"
+              borderTopRightRadius="0.375rem"
               textTransform="uppercase"
               color="white"
               pl={8}

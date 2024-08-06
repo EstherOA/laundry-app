@@ -105,6 +105,12 @@ const ViewOrder = () => {
           </Flex>
         </SimpleGrid>
       </Box>
+      <Box mt={5}>
+        <Text textAlign="center" textStyle="h2" mt="56px" mb="32px">
+          Payment History
+        </Text>
+        {/*TODO: add table for payment history */}
+      </Box>
       <Flex mt={10} justifyContent="flex-end" gap={4}>
         <Button
           bgColor="#43BE57"

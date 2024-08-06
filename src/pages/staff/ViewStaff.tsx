@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, RepeatIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -49,9 +49,11 @@ const ViewStaff = () => {
           <Text>2 Days</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
-          <Flex>
-            <Text textStyle="infoTitle">Initial Password</Text>
-            <Icon />
+          <Flex alignItems="center">
+            <Text textStyle="infoTitle" mr={1}>
+              Initial Password
+            </Text>
+            <Icon as={RepeatIcon} />
           </Flex>
           <Text>30</Text>
         </Flex>

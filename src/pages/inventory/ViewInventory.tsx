@@ -1,5 +1,6 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
+  Badge,
   Box,
   Button,
   Flex,
@@ -19,7 +20,7 @@ const ViewInventory = () => {
         w="100%"
         justify="center"
         alignItems="center"
-        mb="20px"
+        mb="52px"
         position="relative"
       >
         <IconButton
@@ -35,12 +36,10 @@ const ViewInventory = () => {
           }}
           cursor="pointer"
         />
-        <Text fontSize="28px" fontWeight="semibold" mb="32px">
-          Customer #20
+        <Text fontSize="28px" fontWeight="semibold">
+          Item #20
         </Text>
-        <Flex>
-          <Text>Out of Stock</Text>
-        </Flex>
+        <Badge ml={4}>Out of Stock</Badge>
       </Flex>
       <SimpleGrid columns={4} gap={10}>
         <Flex flexDir="column">
