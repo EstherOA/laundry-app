@@ -76,7 +76,7 @@ const ViewOrder = () => {
         >
           Customer Details
         </Text>
-        <SimpleGrid columns={3} gap={10}>
+        <SimpleGrid columns={4} gap={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Customer ID</Text>
             <Text>000123</Text>
@@ -89,12 +89,12 @@ const ViewOrder = () => {
             <Text textStyle="infoTitle">Phone Number</Text>
             <Text>0552342348</Text>
           </Flex>
-        </SimpleGrid>
-        <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Address</Text>
             <Text>Kejetia</Text>
           </Flex>
+        </SimpleGrid>
+        <SimpleGrid columns={4} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Landmark</Text>
             <Text>Old Presbyterian Church</Text>
