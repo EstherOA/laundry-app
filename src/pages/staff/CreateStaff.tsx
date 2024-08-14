@@ -6,7 +6,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Icon,
   IconButton,
   Input,
   Select,
@@ -19,6 +18,7 @@ import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import staff from "../../api/staff";
+import { FileUpload } from "../../components";
 
 interface StaffFormValues {
   firstName: string;
@@ -342,7 +342,12 @@ const CreateStaff = () => {
                     >
                       Contract
                     </FormLabel>
-                    <Input {...field} id="contract" type="file" />
+                    <FileUpload
+                      {...field}
+                      id="contract"
+                      type="file"
+                      multiple={false}
+                    />
                   </FormControl>
                 )}
               </Field>
