@@ -24,22 +24,20 @@ export default {
 
   async addCustomer(jwt: string, data: any) {
     const url = `${BASE_URL}/customers`;
-    const response = await axios.post(url, {
+    const response = await axios.post(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },
 
   async editCustomer(jwt: string, id: string, data: any) {
     const url = `${BASE_URL}/customers/${id}`;
-    const response = await axios.put(url, {
+    const response = await axios.put(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },

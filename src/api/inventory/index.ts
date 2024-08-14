@@ -24,22 +24,20 @@ export default {
 
   async addItem(jwt: string, data: any) {
     const url = `${BASE_URL}/inventory`;
-    const response = await axios.post(url, {
+    const response = await axios.post(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },
 
   async editItem(jwt: string, id: string, data: any) {
     const url = `${BASE_URL}/inventory/${id}`;
-    const response = await axios.put(url, {
+    const response = await axios.put(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },

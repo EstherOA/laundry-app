@@ -23,9 +23,6 @@ export default {
   },
 
   async addService(jwt: string, data: any) {
-    console.log("token:", jwt);
-    console.log("data:", data);
-
     const url = `${BASE_URL}/services`;
     const response = await axios.post(url, data, {
       headers: {

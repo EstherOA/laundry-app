@@ -42,7 +42,7 @@ const CreateService = () => {
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
-  const initialValues = {
+  const initialValues: ServiceFormValues = {
     itemName: "",
     serviceType: "",
     duration: 1,
@@ -60,7 +60,7 @@ const CreateService = () => {
 
       actions.setSubmitting(false);
       toast({
-        description: "Service Created Successfully",
+        description: "Service created successfully",
         position: "top-right",
         duration: 2500,
         status: "success",

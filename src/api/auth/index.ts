@@ -14,7 +14,7 @@ export default {
 
   async logout(jwt: string) {
     const url = `${BASE_URL}/auth/logout`;
-    const response = await axios.post(url, {
+    const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },

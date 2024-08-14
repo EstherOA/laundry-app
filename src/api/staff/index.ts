@@ -24,22 +24,20 @@ export default {
 
   async addStaff(jwt: string, data: any) {
     const url = `${BASE_URL}/staff`;
-    const response = await axios.post(url, {
+    const response = await axios.post(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },
 
   async editStaff(jwt: string, id: string, data: any) {
     const url = `${BASE_URL}/staff/${id}`;
-    const response = await axios.put(url, {
+    const response = await axios.put(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },
