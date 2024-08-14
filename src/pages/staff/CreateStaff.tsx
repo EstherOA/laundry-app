@@ -80,7 +80,7 @@ const CreateStaff = () => {
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="formLabel">Shift Time</Text>
-          <Select h="32px" fontSize="14px" placeholder="Select payment mode">
+          <Select h="32px" fontSize="14px" placeholder="Select shift">
             <option value="option1">Even Days</option>
             <option value="option2">Odd Days</option>
           </Select>

@@ -8,8 +8,18 @@ import {
   MenuList,
   Text,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const handleLogout = async () => {
+    queryClient.removeQueries({ queryKey: ["userToken"] });
+    navigate("/login");
+  };
+
   return (
     <Flex
       backgroundColor="#2A3C9B"
@@ -30,10 +40,16 @@ const Navbar = () => {
         <Menu>
           <MenuButton as={TriangleDownIcon} />
           <MenuList minW="120px" textAlign="center">
-            <MenuItem color="black" w="100%">
+            <MenuItem
+              color="black"
+              w="100%"
+              onClick={() => navigate("/profile")}
+            >
               Profile
             </MenuItem>
-            <MenuItem color="red">Logout</MenuItem>
+            <MenuItem color="red" onClick={handleLogout}>
+              Logout
+            </MenuItem>
           </MenuList>
         </Menu>
       </Flex>

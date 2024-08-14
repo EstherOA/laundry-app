@@ -104,7 +104,7 @@ const CreateOrder = () => {
         <Text textAlign="center" textStyle="h2" mt="56px" mb="32px">
           Customer Details
         </Text>
-        <SimpleGrid columns={3} gap={10}>
+        <SimpleGrid columns={4} gap={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="formLabel">First Name</Text>
             <Input />
@@ -117,12 +117,12 @@ const CreateOrder = () => {
             <Text textStyle="formLabel">Phone Number</Text>
             <Input />
           </Flex>
-        </SimpleGrid>
-        <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="formLabel">Area</Text>
             <Input />
           </Flex>
+        </SimpleGrid>
+        <SimpleGrid columns={4} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="formLabel">Landmark</Text>
             <Input />

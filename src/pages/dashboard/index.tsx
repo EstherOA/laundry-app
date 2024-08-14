@@ -9,16 +9,21 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { DemoChart } from "../../components";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
+  const [stats, setStats] = useState();
+
+  useEffect(() => {}, []);
+
   return (
-    <Box mx={4} my={5}>
+    <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
       <Grid
         templateRows="repeat(2, 1fr)"
         templateColumns="repeat(2, 1fr)"
         gap={4}
       >
-        <GridItem px={4}>
+        <GridItem>
           <SimpleGrid columns={2} gap={8} textAlign="center">
             <Card bgGradient="radial(#A9FFFF, #86C4C4)">
               <CardBody>
@@ -74,7 +79,7 @@ const Dashboard = () => {
           </Card>
         </GridItem>
         <GridItem>
-          <Card bgColor="#FF6A54" minH="300px">
+          <Card bgColor="#FF6A54">
             <CardHeader color="white" fontWeight={600}>
               Inventory Tracking
             </CardHeader>

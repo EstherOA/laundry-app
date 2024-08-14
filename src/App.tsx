@@ -16,6 +16,7 @@ import {
   Inventory,
   Login,
   Orders,
+  Profile,
   Reports,
   Services,
   Staff,
@@ -25,11 +26,15 @@ import {
   ViewService,
   ViewStaff,
 } from "./pages";
-import { Layout } from "./components";
+import { Layout, ProtectedRoute } from "./components";
 
 const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",
@@ -157,7 +162,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Login />,
+        element: <Profile />,
       },
     ],
   },

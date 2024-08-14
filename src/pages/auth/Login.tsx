@@ -3,6 +3,9 @@ import {
   Box,
   Button,
   Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Grid,
   Heading,
   Icon,
@@ -11,12 +14,61 @@ import {
   InputGroup,
   InputRightElement,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import CustomerSvg from "../../assets/customer.svg";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { Form, Formik, Field } from "formik";
+import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+import { useLogin } from "../../hooks";
+import { useQueryClient } from "@tanstack/react-query";
+
+interface FormValues {
+  phoneNumber: string;
+  password: string;
+}
+
+const validationSchema = Yup.object({
+  phoneNumber: Yup.string()
+    .min(10, "Invalid phone number")
+    .required("Phone number is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
 
 const Login = () => {
+  const toast = useToast();
+  const navigate = useNavigate();
+  const loginMutation = useLogin();
+  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = async (values: any, actions: any) => {
+    try {
+      const token = await loginMutation.mutateAsync(values);
+      queryClient.setQueryData(["userToken"], token);
+
+      actions.setSubmitting(false);
+      toast({
+        description: "Login Successful",
+        position: "top-right",
+        duration: 2500,
+        status: "success",
+        isClosable: true,
+      });
+      navigate("/");
+    } catch (error) {
+      toast({
+        description: "Login Failed",
+        position: "top-right",
+        duration: 2500,
+        status: "error",
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box minH="100vh">
@@ -43,40 +95,109 @@ const Login = () => {
             <Heading textAlign="center" mb="1.5em">
               Login
             </Heading>
-            <Flex flexDir="column" gap={1} mb="1.5em">
-              <Text textStyle="formLabel">Phone Number</Text>
-              <Input />
-            </Flex>
-            <Flex flexDir="column" gap={1} mb={2}>
-              <Text textStyle="formLabel">Password</Text>
-              <InputGroup>
-                <Input type={showPassword ? "text" : "password"} />
-                <InputRightElement
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  <Icon as={showPassword ? ViewOffIcon : ViewIcon} />
-                </InputRightElement>
-              </InputGroup>
-            </Flex>
-            <Flex justify="flex-end" mb="1.5em">
-              <Button
-                variant="link"
-                color="#118524"
-                fontSize="small"
-                textDecoration="underline"
-              >
-                Send OTP
-              </Button>
-            </Flex>
-            <Flex flexDir="column" gap={1} mb="2.5em">
-              <Text textStyle="formLabel">Enter OTP</Text>
-              <Input />
-            </Flex>
-            <Flex>
-              <Button color="white" bgColor="#F3705A" w="150px">
-                Login
-              </Button>
-            </Flex>
+            <Formik
+              initialValues={{
+                phoneNumber: "",
+                password: "",
+                otp: "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ isSubmitting, errors, touched }) => (
+                <Form>
+                  <Field name="phoneNumber">
+                    {({ field }: any) => (
+                      <FormControl
+                        isInvalid={
+                          !!(errors.phoneNumber && touched.phoneNumber)
+                        }
+                        mb="1.5em"
+                      >
+                        <FormLabel
+                          htmlFor="phoneNumber"
+                          textStyle="formLabel"
+                          fontSize="10px"
+                        >
+                          Phone Number
+                        </FormLabel>
+                        <Input
+                          {...field}
+                          id="phoneNumber"
+                          placeholder="020 123 4567"
+                        />
+                        <FormErrorMessage>
+                          {errors.phoneNumber}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="password">
+                    {({ field }: any) => (
+                      <FormControl
+                        isInvalid={!!(errors.password && touched.password)}
+                        mb={2}
+                      >
+                        <FormLabel
+                          textStyle="formLabel"
+                          htmlFor="password"
+                          fontSize="10px"
+                        >
+                          Password
+                        </FormLabel>
+                        <InputGroup>
+                          <Input
+                            {...field}
+                            id="password"
+                            placeholder="******"
+                            type={showPassword ? "text" : "password"}
+                          />
+                          <InputRightElement
+                            onClick={() => setShowPassword((prev) => !prev)}
+                          >
+                            <Icon as={showPassword ? ViewOffIcon : ViewIcon} />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage>{errors.password}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Flex justify="flex-end" mb="1.5em">
+                    <Button
+                      variant="link"
+                      color="#118524"
+                      fontSize="small"
+                      textDecoration="underline"
+                    >
+                      Send OTP
+                    </Button>
+                  </Flex>
+                  <Field name="otp">
+                    {({ field }: any) => (
+                      <FormControl mb="2.5em">
+                        <FormLabel textStyle="formLabel" fontSize="10px">
+                          Enter OTP
+                        </FormLabel>
+                        <Input {...field} id="otp" />
+                        <FormErrorMessage>{errors.otp}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Flex>
+                    <Button
+                      type="submit"
+                      color="white"
+                      bgColor="#F3705A"
+                      isLoading={isSubmitting}
+                      w="150px"
+                      _hover={{ bgColor: "#EC4A2F" }}
+                    >
+                      Login
+                    </Button>
+                  </Flex>
+                </Form>
+              )}
+            </Formik>
           </Box>
         </Box>
       </Grid>

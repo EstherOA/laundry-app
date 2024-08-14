@@ -23,23 +23,24 @@ export default {
   },
 
   async addService(jwt: string, data: any) {
+    console.log("token:", jwt);
+    console.log("data:", data);
+
     const url = `${BASE_URL}/services`;
-    const response = await axios.post(url, {
+    const response = await axios.post(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },
 
   async editService(jwt: string, id: string, data: any) {
     const url = `${BASE_URL}/services/${id}`;
-    const response = await axios.put(url, {
+    const response = await axios.put(url, data, {
       headers: {
         Authorization: `Bearer ${jwt}`,
       },
-      data,
     });
     return response.data;
   },
