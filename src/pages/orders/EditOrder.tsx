@@ -8,11 +8,14 @@ import {
   Select,
   SimpleGrid,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { PaymentModal } from "../../components";
 
 const EditOrder = () => {
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
@@ -139,7 +142,7 @@ const EditOrder = () => {
         </Text>
         {/*TODO: add table for payment history */}
         <Flex justifyContent="flex-end">
-          <Button>Add New Payment</Button>
+          <Button onClick={onOpen}>Add New Payment</Button>
         </Flex>
       </Box>
       <Flex justifyContent="flex-end" mt={10}>
@@ -147,6 +150,7 @@ const EditOrder = () => {
           Submit
         </Button>
       </Flex>
+      <PaymentModal isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 };

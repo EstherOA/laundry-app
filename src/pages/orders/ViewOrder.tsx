@@ -8,12 +8,16 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { Invoice } from "../../components";
 
 const ViewOrder = () => {
   const navigate = useNavigate();
 
+  const handleViewInvoice = () => {};
+
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
+      {/* <Invoice /> */}
       <Box>
         <Flex
           w="100%"
@@ -111,7 +115,7 @@ const ViewOrder = () => {
         </Text>
         {/*TODO: add table for payment history */}
       </Box>
-      <Flex mt={10} justifyContent="flex-end" gap={4}>
+      <Flex mt={10} justifyContent="flex-end" gap={4} position="relative">
         <Button
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}
@@ -123,7 +127,12 @@ const ViewOrder = () => {
         <Button bgColor="#FF0000" _hover={{ bgColor: "#8C0000" }} color="white">
           Delete
         </Button>
-        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }} color="white">
+        <Button
+          bgColor="#43BE57"
+          _hover={{ bgColor: "#007B23" }}
+          color="white"
+          onClick={handleViewInvoice}
+        >
           View Invoice
         </Button>
       </Flex>
