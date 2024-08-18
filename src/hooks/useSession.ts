@@ -1,17 +1,12 @@
-import { UseMutationResult, useMutation } from "@tanstack/react-query";
+import {
+  UseMutationResult,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import { BASE_URL } from "../utils/constants";
+import { LoginPayload, LoginResponse } from "../utils/types";
 
-interface LoginResponse {
-  token: string | null;
-}
-
-interface LoginPayload {
-  phoneNumber: string;
-  password: string;
-  otp: string;
-}
-
-const useLogin = (): UseMutationResult<
+export const useLogin = (): UseMutationResult<
   LoginResponse,
   Error,
   LoginPayload,
@@ -39,4 +34,11 @@ const useLogin = (): UseMutationResult<
   });
 };
 
-export default useLogin;
+export const useToken = () => {
+  const { data: token } = useQuery<string | null>({
+    queryKey: ["userToken"],
+    enabled: false,
+  });
+
+  return token;
+};

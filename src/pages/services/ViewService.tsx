@@ -62,12 +62,12 @@ const ViewService = () => {
             <Text textStyle="infoTitle">Description</Text>
             <Text>Adult shirt male</Text>
           </Flex>
-        </SimpleGrid>
-        <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Created At</Text>
             <Text>13th May, 2024</Text>
           </Flex>
+        </SimpleGrid>
+        <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Last Updated</Text>
             <Text>13th May, 2024</Text>

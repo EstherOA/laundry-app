@@ -25,6 +25,8 @@ import {
   ViewOrder,
   ViewService,
   ViewStaff,
+  ResetPassword,
+  ChangePassword,
 } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
 
@@ -169,6 +171,14 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
+  },
+  {
+    path: "/change-password",
+    element: <ChangePassword />,
   },
 ]);
 

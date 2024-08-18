@@ -21,9 +21,10 @@ import CreateInventory from "./CreateInventory";
 import ViewInventory from "./ViewInventory";
 import EditInventory from "./EditInventory";
 import FilterIcon from "../../assets/filter.svg";
+import { CustomBadge } from "../../components";
 
 type PaymentMode = "momo" | "cash";
-type ItemStatus = "InStock" | "LowStock" | "OutOfStock";
+type ItemStatus = "in-stock" | "low-stock" | "out-of-stock";
 
 type Inventory = {
   id: string;
@@ -51,7 +52,7 @@ const Inventory = () => {
       paymentMode: "cash",
       purchasedBy: "John Doe",
       datePurchased: "12-03-2024",
-      status: "InStock",
+      status: "in-stock",
     },
     {
       id: "2",
@@ -62,7 +63,7 @@ const Inventory = () => {
       paymentMode: "cash",
       purchasedBy: "Billy Rogan",
       datePurchased: "12-03-2024",
-      status: "LowStock",
+      status: "low-stock",
     },
     {
       id: "2",
@@ -73,7 +74,7 @@ const Inventory = () => {
       paymentMode: "momo",
       purchasedBy: "Jane Doe",
       datePurchased: "12-03-2024",
-      status: "OutOfStock",
+      status: "out-of-stock",
     },
   ]);
 
@@ -120,7 +121,13 @@ const Inventory = () => {
     }),
     columnHelper.accessor("status", {
       id: "status",
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <CustomBadge
+          title={info.getValue()}
+          withDot
+          badgeStyle={{ margin: "0 auto" }}
+        />
+      ),
       header: "Status",
     }),
   ];

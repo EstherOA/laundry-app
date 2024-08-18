@@ -117,7 +117,7 @@ const CreateStaff = () => {
           left="150px"
           variant="ghost"
           onClick={() => {
-            navigate("/customers");
+            navigate("/staff");
           }}
           cursor="pointer"
         />

@@ -21,5 +21,5 @@ export {
 } from "./inventory";
 export { default as Reports } from "./reports";
 export { default as Staff, CreateStaff, EditStaff, ViewStaff } from "./staff";
-export { Login } from "./auth";
+export { Login, ChangePassword, ResetPassword } from "./auth";
 export { default as Profile } from "./profile";

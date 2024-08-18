@@ -10,10 +10,15 @@ import {
 
 interface CustomTableProps {
   initialData: any[];
-  columns: ColumnDef<any>[];
+  columns: any[];
+  onRowClick: (id: string) => void;
 }
 
-const CustomTable = ({ initialData, columns }: CustomTableProps) => {
+const CustomTable = ({
+  initialData,
+  columns,
+  onRowClick,
+}: CustomTableProps) => {
   const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState(initialData);
 
@@ -87,7 +92,7 @@ const CustomTable = ({ initialData, columns }: CustomTableProps) => {
       <tbody>
         {table.getRowModel().rows.map((row) => {
           return (
-            <tr key={row.id}>
+            <tr key={row.id} onClick={() => onRowClick(row.id)}>
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>

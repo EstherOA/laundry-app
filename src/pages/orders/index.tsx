@@ -21,8 +21,14 @@ import {
 } from "@tanstack/react-table";
 import { Link, useNavigate } from "react-router-dom";
 import FilterIcon from "../../assets/filter.svg";
+import { CustomBadge } from "../../components";
 
-type OrderStatus = "pending" | "cancelled" | "overdue" | "complete";
+type OrderStatus =
+  | "pending"
+  | "cancelled"
+  | "overdue"
+  | "complete"
+  | "almost-due";
 type PaymentStatus = "none" | "partial" | "full";
 
 type Order = {
@@ -45,17 +51,17 @@ const Orders = () => {
       id: "0",
       items: "1x Shirt, 2x Blouse, 1x Jeans",
       total: 300,
-      orderStatus: "pending",
+      orderStatus: "almost-due",
       customerName: "John Doe",
       createdBy: "Bill Rogan",
       createdAt: "12-03-2024",
-      paymentStatus: "none",
+      paymentStatus: "full",
     },
     {
       id: "1",
       items: "1x Shirt, 2x Blouse, 1x Jeans",
       total: 300,
-      orderStatus: "pending",
+      orderStatus: "complete",
       customerName: "John Doe",
       createdBy: "Bill Rogan",
       createdAt: "12-03-2024",
@@ -69,7 +75,7 @@ const Orders = () => {
       customerName: "John Doe",
       createdBy: "Bill Rogan",
       createdAt: "12-03-2024",
-      paymentStatus: "none",
+      paymentStatus: "partial",
     },
   ]);
 
@@ -91,7 +97,13 @@ const Orders = () => {
     }),
     columnHelper.accessor("orderStatus", {
       id: "orderStatus",
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <CustomBadge
+          title={info.getValue()}
+          withDot
+          badgeStyle={{ margin: "0 auto" }}
+        />
+      ),
       header: "Order Status",
     }),
     columnHelper.accessor("customerName", {
@@ -111,7 +123,13 @@ const Orders = () => {
     }),
     columnHelper.accessor("paymentStatus", {
       id: "paymentStatus",
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <CustomBadge
+          title={info.getValue()}
+          withDot
+          badgeStyle={{ margin: "0 auto" }}
+        />
+      ),
       header: "Payment Status",
     }),
   ];

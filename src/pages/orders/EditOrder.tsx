@@ -11,7 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { PaymentModal } from "../../components";
+import { CustomBadge, PaymentModal } from "../../components";
 
 const EditOrder = () => {
   const navigate = useNavigate();
@@ -40,7 +40,8 @@ const EditOrder = () => {
             }}
             cursor="pointer"
           />
-          <Text textStyle="h1">Edit Order #20</Text>
+          <Text textStyle="h1">Edit Order #20</Text>{" "}
+          <CustomBadge title="pending" withDot badgeStyle={{ ml: 4 }} />
         </Flex>
         <Text textAlign="center" textStyle="h2" mb="32px">
           Order Details

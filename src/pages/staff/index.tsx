@@ -9,68 +9,24 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CreateStaff from "./CreateStaff";
 import ViewStaff from "./ViewStaff";
 import EditStaff from "./EditStaff";
 import FilterIcon from "../../assets/filter.svg";
-
-type Shift = "odd" | "even";
-
-type Staff = {
-  id: string;
-  name: string;
-  role: string;
-  phoneNumber: string;
-  shift: Shift;
-  dateCommenced: string;
-  salary: number;
-  createdAt: string;
-};
+import CustomTable from "../../components/table";
+import staff from "../../api/staff";
+import { StaffType } from "../../utils/types";
+import { useToken } from "../../hooks";
 
 const Staff = () => {
-  const columnHelper = createColumnHelper<Staff>();
+  const columnHelper = createColumnHelper<StaffType>();
   const navigate = useNavigate();
+  const token = useToken();
 
-  const [data, setData] = useState<Staff[]>([
-    {
-      id: "0",
-      name: "John Doe",
-      phoneNumber: "0551234567",
-      createdAt: "12-03-2024",
-      shift: "even",
-      dateCommenced: "21-09-2012",
-      salary: 1500,
-      role: "washing",
-    },
-    {
-      id: "1",
-      name: "John Doe",
-      phoneNumber: "0551234567",
-      createdAt: "12-03-2024",
-      shift: "even",
-      dateCommenced: "21-09-2012",
-      salary: 1500,
-      role: "washing",
-    },
-    {
-      id: "2",
-      name: "Jane Doe",
-      phoneNumber: "0551234567",
-      createdAt: "12-03-2024",
-      shift: "odd",
-      dateCommenced: "21-09-2012",
-      salary: 1500,
-      role: "ironing",
-    },
-  ]);
+  const [data, setData] = useState<StaffType[]>([]);
 
   const columns = [
     columnHelper.accessor("id", {
@@ -115,11 +71,43 @@ const Staff = () => {
     }),
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  useEffect(() => {
+    const fetchStaff = async () => {
+      const res = await staff.getStaff(token!);
+      console.log("all employees:", res);
+      return res;
+    };
+
+    fetchStaff()
+      .then((staff) => {
+        if (!Array.isArray(staff)) throw new Error("Invalid staff data!");
+        const transformed = staff.map(
+          ({
+            firstName,
+            lastName,
+            password,
+            ssnit,
+            tin,
+            updatedAt,
+            _id,
+            __v,
+            dateCommenced,
+            createdAt,
+            ...rest
+          }: any) => ({
+            name: `${firstName} ${lastName}`,
+            ...rest,
+            dateCommenced: new Date(createdAt).toLocaleDateString(),
+            createdAt: new Date(createdAt).toLocaleDateString(),
+            id: "001",
+          })
+        );
+        console.log("transformed employees:", transformed);
+
+        setData(transformed as unknown as StaffType[]);
+      })
+      .catch((err) => console.error("error fetching staff:", err));
+  }, []);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
@@ -136,35 +124,11 @@ const Staff = () => {
         </InputGroup>
       </Flex>
       <Box mb="70px" mt="48px">
-        <table>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} onClick={() => navigate(`/staff/${row.id}`)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <CustomTable
+          columns={columns}
+          initialData={data}
+          onRowClick={(id) => navigate(`/staff/${id}`)}
+        />
       </Box>
       <Flex justify="flex-end">
         <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>

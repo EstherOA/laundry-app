@@ -8,7 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { Invoice } from "../../components";
+import { CustomBadge, Invoice } from "../../components";
 
 const ViewOrder = () => {
   const navigate = useNavigate();
@@ -42,6 +42,7 @@ const ViewOrder = () => {
           <Text fontSize="28px" fontWeight="semibold">
             Order #20
           </Text>
+          <CustomBadge title="pending" withDot badgeStyle={{ ml: 4 }} />
         </Flex>
         <Text
           textAlign="center"

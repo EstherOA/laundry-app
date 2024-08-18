@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   Button,
@@ -21,60 +20,48 @@ import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "../../hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
-interface LoginFormValues {
-  phoneNumber: string;
-  password: string;
-  otp: string;
+interface ChangePasswordFormValues {
+  initialPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
 }
 
 const validationSchema = Yup.object({
-  phoneNumber: Yup.string()
-    .min(10, "Invalid phone number")
-    .required("Phone number is required"),
-  password: Yup.string()
+  initialPassword: Yup.string()
     .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  newPassword: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmNewPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword"), ""], "Passwords must match")
     .required("Password is required"),
 });
 
-const Login = () => {
+const ChangePassword = () => {
   const toast = useToast();
   const navigate = useNavigate();
-  const loginMutation = useLogin();
-  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
 
-  const initialValues: LoginFormValues = {
-    phoneNumber: "",
-    password: "",
-    otp: "",
+  const initialValues: ChangePasswordFormValues = {
+    initialPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
   };
 
   const handleSubmit = async (values: any, actions: any) => {
-    try {
-      const token = await loginMutation.mutateAsync(values);
-      queryClient.setQueryData(["userToken"], token);
-
-      actions.setSubmitting(false);
-      toast({
-        description: "Login Successful",
-        position: "top-right",
-        duration: 2500,
-        status: "success",
-        isClosable: true,
-      });
-      navigate("/");
-    } catch (error) {
-      toast({
-        description: "Login Failed",
-        position: "top-right",
-        duration: 2500,
-        status: "error",
-        isClosable: true,
-      });
-    }
+    console.log("values:", values);
+    toast({
+      description: "Password Updated Successfully",
+      position: "top-right",
+      duration: 2500,
+      status: "success",
+      isClosable: true,
+    });
+    navigate("/");
+    actions.setSubmitting(false);
   };
 
   return (
@@ -100,7 +87,7 @@ const Login = () => {
         <Box minH="100vh" pl="5em" pt="12em">
           <Box w="60%">
             <Heading textAlign="center" mb="1.5em">
-              Login
+              Change Password
             </Heading>
             <Formik
               initialValues={initialValues}
@@ -109,49 +96,51 @@ const Login = () => {
             >
               {({ isSubmitting, errors, touched }) => (
                 <Form>
-                  <Field name="phoneNumber">
+                  <Field name="initialPassword">
                     {({ field }: any) => (
                       <FormControl
                         isInvalid={
-                          !!(errors.phoneNumber && touched.phoneNumber)
+                          !!(errors.initialPassword && touched.initialPassword)
                         }
                         mb="1.5em"
                       >
                         <FormLabel
-                          htmlFor="phoneNumber"
+                          htmlFor="initialPassword"
                           textStyle="formLabel"
                           fontSize="10px"
                         >
-                          Phone Number
+                          Initial Password
                         </FormLabel>
                         <Input
                           {...field}
-                          id="phoneNumber"
+                          id="initialPassword"
                           placeholder="020 123 4567"
                         />
                         <FormErrorMessage>
-                          {errors.phoneNumber}
+                          {errors.initialPassword}
                         </FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
-                  <Field name="password">
+                  <Field name="newPassword">
                     {({ field }: any) => (
                       <FormControl
-                        isInvalid={!!(errors.password && touched.password)}
-                        mb={2}
+                        isInvalid={
+                          !!(errors.newPassword && touched.newPassword)
+                        }
+                        mb="1.5em"
                       >
                         <FormLabel
                           textStyle="formLabel"
-                          htmlFor="password"
+                          htmlFor="newPassword"
                           fontSize="10px"
                         >
-                          Password
+                          New Password
                         </FormLabel>
                         <InputGroup>
                           <Input
                             {...field}
-                            id="password"
+                            id="newPassword"
                             placeholder="******"
                             type={showPassword ? "text" : "password"}
                           />
@@ -161,28 +150,46 @@ const Login = () => {
                             <Icon as={showPassword ? ViewOffIcon : ViewIcon} />
                           </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage>{errors.password}</FormErrorMessage>
+                        <FormErrorMessage>
+                          {errors.newPassword}
+                        </FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
-                  <Flex justify="flex-end" mb="1.5em">
-                    <Button
-                      variant="link"
-                      color="#118524"
-                      fontSize="small"
-                      textDecoration="underline"
-                    >
-                      Send OTP
-                    </Button>
-                  </Flex>
-                  <Field name="otp">
+                  <Field name="confirmNewPassword">
                     {({ field }: any) => (
-                      <FormControl mb="2.5em">
-                        <FormLabel textStyle="formLabel" fontSize="10px">
-                          Enter OTP
+                      <FormControl
+                        isInvalid={
+                          !!(
+                            errors.confirmNewPassword &&
+                            touched.confirmNewPassword
+                          )
+                        }
+                        mb="2.5em"
+                      >
+                        <FormLabel
+                          textStyle="formLabel"
+                          htmlFor="confirmNewPassword"
+                          fontSize="10px"
+                        >
+                          Confirm New Password
                         </FormLabel>
-                        <Input {...field} id="otp" />
-                        <FormErrorMessage>{errors.otp}</FormErrorMessage>
+                        <InputGroup>
+                          <Input
+                            {...field}
+                            id="confirmNewPassword"
+                            placeholder="******"
+                            type={showPassword ? "text" : "password"}
+                          />
+                          <InputRightElement
+                            onClick={() => setShowPassword((prev) => !prev)}
+                          >
+                            <Icon as={showPassword ? ViewOffIcon : ViewIcon} />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage>
+                          {errors.confirmNewPassword}
+                        </FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
@@ -195,7 +202,7 @@ const Login = () => {
                       w="150px"
                       _hover={{ bgColor: "#EC4A2F" }}
                     >
-                      Login
+                      Submit
                     </Button>
                   </Flex>
                 </Form>
@@ -208,4 +215,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ChangePassword;
