@@ -88,10 +88,11 @@ const Staff = () => {
             ...rest,
           })
         );
+
         setData(transformed);
       })
       .catch((err) => console.error("error fetching staff:", err));
-  }, []);
+  }, [token]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

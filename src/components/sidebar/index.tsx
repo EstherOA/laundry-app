@@ -66,7 +66,7 @@ const Sidebar = () => {
     return (
       sideItems.find((item) => item.title === currentPage)?.svg ?? DashboardSvg
     );
-  }, [currentPage, sideItems]);
+  }, [currentPage]);
 
   const handleClick = (title: string, to: string) => {
     setCurrentPage(title);

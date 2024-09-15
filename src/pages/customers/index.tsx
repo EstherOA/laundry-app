@@ -79,7 +79,7 @@ const Customers = () => {
         setData(transformed);
       })
       .catch((err) => console.error("error fetching customers:", err));
-  }, []);
+  }, [token]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

@@ -104,7 +104,7 @@ const Orders = () => {
       if (!Array.isArray(orders)) throw new Error("Invalid order data!");
       setData(orders);
     });
-  }, []);
+  }, [token]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

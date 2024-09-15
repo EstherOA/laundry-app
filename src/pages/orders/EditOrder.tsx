@@ -75,7 +75,7 @@ const OrderItemEntry = ({
       }
     };
     fetchServices();
-  }, []);
+  }, [token]);
 
   const getServiceTypes = () => {
     if (!selectedService) return ["washing", "dry-cleaning", "ironing"];
@@ -395,7 +395,7 @@ const EditOrder = () => {
       }
     };
     fetchStaff();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (values: any, actions: any) => {
     try {

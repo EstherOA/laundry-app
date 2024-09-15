@@ -9,7 +9,7 @@ const mapColorToStatus = {
 };
 
 export const getColorSchemeByStatus = (status: string): BadgeColorScheme => {
-  const found = Object.entries(mapColorToStatus).find(([_, val]) =>
+  const found = Object.entries(mapColorToStatus).find(([, val]) =>
     val.includes(status)
   );
 

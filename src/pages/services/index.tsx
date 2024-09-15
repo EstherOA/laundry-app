@@ -74,7 +74,7 @@ const Services = () => {
       if (!Array.isArray(data)) throw new Error("Invalid service data!");
       setData(data);
     });
-  }, []);
+  }, [token]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

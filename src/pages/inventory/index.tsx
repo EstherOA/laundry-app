@@ -97,7 +97,7 @@ const Inventory = () => {
         setData(data);
       })
       .catch((error) => console.error("error fetching staff:", error));
-  }, []);
+  }, [token]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

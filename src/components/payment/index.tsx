@@ -100,7 +100,7 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
       }
     };
     fetchStaff();
-  }, []);
+  }, [token]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
