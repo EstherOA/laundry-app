@@ -7,9 +7,12 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const ViewCustomer = () => {
+  const {
+    state: { customerDetails },
+  } = useLocation();
   const navigate = useNavigate();
 
   return (
@@ -30,47 +33,51 @@ const ViewCustomer = () => {
           left="150px"
           variant="ghost"
           onClick={() => {
-            navigate("/services");
+            navigate("/customers");
           }}
           cursor="pointer"
         />
         <Text fontSize="28px" fontWeight="semibold" mb="32px">
-          Customer #20
+          Customer {customerDetails._id}
         </Text>
       </Flex>
       <Box>
         <SimpleGrid columns={3} gap={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Full Name</Text>
-            <Text>Shirt</Text>
+            <Text>{customerDetails.name}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Phone Number</Text>
-            <Text>Washing</Text>
+            <Text>{customerDetails.phoneNumber}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Address</Text>
-            <Text>2 Days</Text>
+            <Text>{customerDetails.address}</Text>
           </Flex>
         </SimpleGrid>
         <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column">
             <Text textStyle="infoTitle">Landmark</Text>
-            <Text>30</Text>
+            <Text>{customerDetails.landmark}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Delivery Notes</Text>
-            <Text>Adult shirt male</Text>
+            <Text>{customerDetails.deliveryNotes}</Text>
           </Flex>
         </SimpleGrid>
         <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Created At</Text>
-            <Text>13th May, 2024</Text>
+            <Text>
+              {new Date(customerDetails.createdAt).toLocaleDateString()}
+            </Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Last Updated</Text>
-            <Text>13th May, 2024</Text>
+            <Text>
+              {new Date(customerDetails.updatedAt).toLocaleDateString()}
+            </Text>
           </Flex>
         </SimpleGrid>
       </Box>
@@ -79,7 +86,11 @@ const ViewCustomer = () => {
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}
           color="white"
-          onClick={() => navigate("/customers/20/edit")}
+          onClick={() =>
+            navigate(`/customers/${customerDetails._id}/edit`, {
+              state: { customerDetails },
+            })
+          }
         >
           Edit
         </Button>

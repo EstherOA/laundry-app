@@ -13,7 +13,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
@@ -38,18 +38,12 @@ const validationSchema = Yup.object({
 });
 
 const EditCustomer = () => {
+  const {
+    state: { customerDetails },
+  } = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
-
-  const initialValues: CustomerFormValues = {
-    firstName: "",
-    lastName: "",
-    landmark: "",
-    address: "",
-    deliveryNotes: "",
-    phoneNumber: "",
-  };
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
@@ -101,7 +95,7 @@ const EditCustomer = () => {
         <Text textStyle="h1">Edit Customer #20</Text>
       </Flex>
       <Formik
-        initialValues={initialValues}
+        initialValues={customerDetails as CustomerFormValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >

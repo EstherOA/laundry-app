@@ -18,15 +18,7 @@ import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import customers from "../../api/customers";
-
-interface CustomerFormValues {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  address: string;
-  landmark: string;
-  deliveryNotes: string;
-}
+import { CustomerFormValues } from "../../utils/types";
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
@@ -49,6 +41,7 @@ const CreateCustomer = () => {
     address: "",
     deliveryNotes: "",
     phoneNumber: "",
+    customerId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {

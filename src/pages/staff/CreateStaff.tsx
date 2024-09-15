@@ -19,21 +19,7 @@ import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import staff from "../../api/staff";
 import { FileUpload } from "../../components";
-
-interface StaffFormValues {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  address: string;
-  password: string;
-  role: string;
-  dateCommenced: Date;
-  ssnit: string;
-  tin: string;
-  salary: number;
-  shift: string;
-  contract: string;
-}
+import { StaffFormValues } from "../../utils/types";
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
@@ -68,16 +54,16 @@ const CreateStaff = () => {
     role: "",
     ssnit: "",
     tin: "",
-    shift: "",
+    shift: "even",
     salary: 0,
-    dateCommenced: new Date(),
+    dateCommenced: new Date().toLocaleDateString(),
     contract: "",
+    staffId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
       const res = await staff.addStaff(token!, values);
-      console.log("added employee:", res);
 
       actions.setSubmitting(false);
       toast({
@@ -170,15 +156,13 @@ const CreateStaff = () => {
                   <FormControl
                     isInvalid={!!(errors.phoneNumber && touched.phoneNumber)}
                   >
-                    <Flex>
-                      <FormLabel
-                        htmlFor="phoneNumber"
-                        fontSize="10px"
-                        textStyle="formLabel"
-                      >
-                        Phone Number
-                      </FormLabel>
-                    </Flex>
+                    <FormLabel
+                      htmlFor="phoneNumber"
+                      fontSize="10px"
+                      textStyle="formLabel"
+                    >
+                      Phone Number
+                    </FormLabel>
                     <Input {...field} id="phoneNumber" />
                     <FormErrorMessage>{errors.phoneNumber}</FormErrorMessage>
                   </FormControl>

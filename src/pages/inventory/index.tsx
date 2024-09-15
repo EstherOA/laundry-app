@@ -9,77 +9,28 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CreateInventory from "./CreateInventory";
 import ViewInventory from "./ViewInventory";
 import EditInventory from "./EditInventory";
 import FilterIcon from "../../assets/filter.svg";
 import { CustomBadge } from "../../components";
-
-type PaymentMode = "momo" | "cash";
-type ItemStatus = "in-stock" | "low-stock" | "out-of-stock";
-
-type Inventory = {
-  id: string;
-  itemName: string;
-  price: number;
-  quantity: number;
-  purchasedBy: string;
-  vendor: string;
-  paymentMode: PaymentMode;
-  datePurchased: string;
-  status: ItemStatus;
-};
+import { useQuery } from "@tanstack/react-query";
+import inventory from "../../api/inventory";
+import CustomTable from "../../components/table";
+import { Inventory as InventoryType } from "../../utils/types";
 
 const Inventory = () => {
-  const columnHelper = createColumnHelper<Inventory>();
+  const columnHelper = createColumnHelper<InventoryType>();
   const navigate = useNavigate();
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
-  const [data, setData] = useState<Inventory[]>([
-    {
-      id: "0",
-      itemName: "John Doe",
-      quantity: 5,
-      price: 100,
-      vendor: "Melcom",
-      paymentMode: "cash",
-      purchasedBy: "John Doe",
-      datePurchased: "12-03-2024",
-      status: "in-stock",
-    },
-    {
-      id: "2",
-      itemName: "John Doe",
-      quantity: 5,
-      price: 100,
-      vendor: "Melcom",
-      paymentMode: "cash",
-      purchasedBy: "Billy Rogan",
-      datePurchased: "12-03-2024",
-      status: "low-stock",
-    },
-    {
-      id: "2",
-      itemName: "John Doe",
-      quantity: 5,
-      price: 100,
-      vendor: "Melcom",
-      paymentMode: "momo",
-      purchasedBy: "Jane Doe",
-      datePurchased: "12-03-2024",
-      status: "out-of-stock",
-    },
-  ]);
+  const [data, setData] = useState<InventoryType[]>([]);
 
   const columns = [
-    columnHelper.accessor("id", {
+    columnHelper.accessor("itemId", {
       id: "id",
       cell: (info) => info.getValue(),
       header: "Item ID",
@@ -101,7 +52,7 @@ const Inventory = () => {
     }),
     columnHelper.accessor("purchasedBy", {
       id: "purchasedBy",
-      cell: (info) => info.getValue(),
+      cell: (info) => info.getValue().name,
       header: "Purchased By",
     }),
     columnHelper.accessor("vendor", {
@@ -116,7 +67,7 @@ const Inventory = () => {
     }),
     columnHelper.accessor("datePurchased", {
       id: "datePurchased",
-      cell: (info) => info.getValue(),
+      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       header: "Date Purchased",
     }),
     columnHelper.accessor("status", {
@@ -132,11 +83,21 @@ const Inventory = () => {
     }),
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        return await inventory.getInventory(token!);
+      } catch (error) {
+        console.error("error fetching services:", error);
+      }
+    };
+    fetchInventory()
+      .then((data) => {
+        if (!Array.isArray(data)) throw new Error("Invalid inventory data!");
+        setData(data);
+      })
+      .catch((error) => console.error("error fetching staff:", error));
+  }, []);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
@@ -153,35 +114,17 @@ const Inventory = () => {
         </InputGroup>
       </Flex>
       <Box mb="70px" mt="48px">
-        <table>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} onClick={() => navigate(`/inventory/${row.id}`)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <CustomTable
+          columns={columns}
+          initialData={data}
+          onRowClick={(row) =>
+            navigate(`/inventory/${row._id}`, {
+              state: {
+                inventoryDetails: row,
+              },
+            })
+          }
+        />
       </Box>
       <Flex justify="flex-end">
         <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>

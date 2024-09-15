@@ -14,24 +14,13 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import inventory from "../../api/inventory";
 import { FileUpload } from "../../components";
-
-interface InventoryFormValues {
-  itemName: string;
-  description: string;
-  price: number;
-  quantity: number;
-  purchasedBy: string;
-  vendor: string;
-  datePurchased: Date;
-  paymentMode: string;
-  paymentReceipt: string;
-}
+import { InventoryFormValues } from "../../utils/types";
 
 const validationSchema = Yup.object({
   itemName: Yup.string().required("Item Name is required"),
@@ -46,22 +35,13 @@ const validationSchema = Yup.object({
 });
 
 const EditInventory = () => {
+  const {
+    state: { inventoryDetails },
+  } = useLocation();
   const navigate = useNavigate();
 
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
-
-  const initialValues: InventoryFormValues = {
-    itemName: "",
-    description: "",
-    price: 0,
-    quantity: 1,
-    purchasedBy: "",
-    paymentMode: "",
-    paymentReceipt: "",
-    datePurchased: new Date(),
-    vendor: "",
-  };
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
@@ -76,7 +56,7 @@ const EditInventory = () => {
         status: "success",
         isClosable: true,
       });
-      navigate("/staff");
+      navigate("/inventory");
     } catch (error) {
       toast({
         description: "Failed to add item",
@@ -110,10 +90,10 @@ const EditInventory = () => {
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Item #20</Text>
+        <Text textStyle="h1">Edit Item #{inventoryDetails._id}</Text>
       </Flex>
       <Formik
-        initialValues={initialValues}
+        initialValues={inventoryDetails as InventoryFormValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >

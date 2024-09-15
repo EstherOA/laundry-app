@@ -16,20 +16,12 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import services from "../../api/services";
-
-interface ServiceFormValues {
-  itemName: string;
-  serviceType: string;
-  duration: number;
-  price: number;
-  quantity: number;
-  description: string;
-}
+import { ServiceFormValues } from "../../utils/types";
 
 const validationSchema = Yup.object({
   itemName: Yup.string().required("Item name is required"),
@@ -38,27 +30,25 @@ const validationSchema = Yup.object({
 });
 
 const EditService = () => {
+  const {
+    state: { serviceDetails },
+  } = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
-  const initialValues = {
-    itemName: "",
-    serviceType: "",
-    duration: 1,
-    price: 0,
-    quantity: 1,
-    description: "",
-  };
-
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const res = await services.editService(token!, "", values);
+      const res = await services.editService(
+        token!,
+        serviceDetails._id,
+        values
+      );
       console.log("edited service:", res);
 
       actions.setSubmitting(false);
       toast({
-        description: "Service Created Successfully",
+        description: "Service Edited Successfully",
         position: "top-right",
         duration: 2500,
         status: "success",
@@ -67,12 +57,12 @@ const EditService = () => {
       navigate("/services");
     } catch (error) {
       toast({
-        description: "Failed to create service",
+        description: "Failed to edit service",
         duration: 2500,
         isClosable: true,
         status: "error",
       });
-      console.error("error creating service:", error);
+      console.error("error editing service:", error);
     }
   };
 
@@ -101,7 +91,7 @@ const EditService = () => {
         <Text textStyle="h1">Edit Service #20</Text>
       </Flex>
       <Formik
-        initialValues={initialValues}
+        initialValues={serviceDetails as ServiceFormValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -144,9 +134,9 @@ const EditService = () => {
                     fontSize="14px"
                     placeholder="Select service type"
                   >
-                    <option value="option1">Washing</option>
-                    <option value="option2">Dry Cleaning</option>
-                    <option value="option3">Ironing</option>
+                    <option value="washing">Washing</option>
+                    <option value="dry cleaning">Dry Cleaning</option>
+                    <option value="ironing">Ironing</option>
                   </Select>
                   <FormErrorMessage>{errors.serviceType}</FormErrorMessage>
                 </FormControl>
@@ -192,7 +182,7 @@ const EditService = () => {
                     Average Duration
                   </FormLabel>
                   <InputGroup>
-                    <Input {...field} id="duration" type="number" min={0} />
+                    <Input {...field} id="duration" type="number" min={1} />
                     <InputRightElement mr={4}>Day(s)</InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>{errors.duration}</FormErrorMessage>

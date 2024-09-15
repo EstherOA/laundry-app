@@ -4,14 +4,17 @@ import {
   Box,
   Button,
   Flex,
-  Icon,
   IconButton,
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CustomBadge } from "../../components";
 
 const ViewInventory = () => {
+  const {
+    state: { inventoryDetails },
+  } = useLocation();
   const navigate = useNavigate();
 
   return (
@@ -32,59 +35,69 @@ const ViewInventory = () => {
           left="150px"
           variant="ghost"
           onClick={() => {
-            navigate("/services");
+            navigate("/inventory");
           }}
           cursor="pointer"
         />
         <Text fontSize="28px" fontWeight="semibold">
-          Item #20
+          Item #{inventoryDetails._id}
         </Text>
-        <Badge ml={4}>Out of Stock</Badge>
+        <CustomBadge
+          title={inventoryDetails.status}
+          withDot
+          badgeStyle={{ marginLeft: 4 }}
+        />
       </Flex>
       <SimpleGrid columns={4} gap={10}>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Item Name</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.itemName}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Description</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.description}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Price</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.price}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Quantity</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.quantity}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Purchased By</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.purchasedBy}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Vendor</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.vendor}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Date Purchased</Text>
-          <Text>13th May, 2024</Text>
+          <Text>
+            {new Date(inventoryDetails.datePurchased).toLocaleDateString()}
+          </Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Payment Mode</Text>
-          <Text>Momo</Text>
+          <Text>{inventoryDetails.paymentMode}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Payment Receipt</Text>
-          <Text>Shirt</Text>
+          <Text>{inventoryDetails.paymentReceipt}</Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Date Recorded</Text>
-          <Text>13th May, 2024</Text>
+          <Text>
+            {new Date(inventoryDetails.createdAt).toLocaleDateString()}
+          </Text>
         </Flex>
         <Flex flexDir="column">
           <Text textStyle="infoTitle">Last Updated</Text>
-          <Text>13th May, 2024</Text>
+          <Text>
+            {new Date(inventoryDetails.updatedAt).toLocaleDateString()}
+          </Text>
         </Flex>
       </SimpleGrid>
       <Flex justifyContent="flex-end" gap={4}>
@@ -92,7 +105,11 @@ const ViewInventory = () => {
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}
           color="white"
-          onClick={() => navigate("/inventory/20/edit")}
+          onClick={() =>
+            navigate(`/inventory/${inventoryDetails._id}/edit`, {
+              state: { inventoryDetails },
+            })
+          }
         >
           Edit
         </Button>

@@ -18,7 +18,7 @@ import EditStaff from "./EditStaff";
 import FilterIcon from "../../assets/filter.svg";
 import CustomTable from "../../components/table";
 import staff from "../../api/staff";
-import { StaffType } from "../../utils/types";
+import { Staff as StaffType } from "../../utils/types";
 import { useToken } from "../../hooks";
 
 const Staff = () => {
@@ -29,7 +29,7 @@ const Staff = () => {
   const [data, setData] = useState<StaffType[]>([]);
 
   const columns = [
-    columnHelper.accessor("id", {
+    columnHelper.accessor("staffId", {
       id: "id",
       cell: (info) => info.getValue(),
       header: "Staff ID",
@@ -56,7 +56,7 @@ const Staff = () => {
     }),
     columnHelper.accessor("dateCommenced", {
       id: "dateCommenced",
-      cell: (info) => info.getValue(),
+      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       header: "Date Commenced",
     }),
     columnHelper.accessor("salary", {
@@ -66,7 +66,7 @@ const Staff = () => {
     }),
     columnHelper.accessor("createdAt", {
       id: "createdAt",
-      cell: (info) => info.getValue(),
+      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       header: "Date Created",
     }),
   ];
@@ -74,7 +74,6 @@ const Staff = () => {
   useEffect(() => {
     const fetchStaff = async () => {
       const res = await staff.getStaff(token!);
-      console.log("all employees:", res);
       return res;
     };
 
@@ -82,29 +81,14 @@ const Staff = () => {
       .then((staff) => {
         if (!Array.isArray(staff)) throw new Error("Invalid staff data!");
         const transformed = staff.map(
-          ({
+          ({ firstName, lastName, password, __v, ...rest }: any) => ({
+            name: `${firstName} ${lastName}`,
             firstName,
             lastName,
-            password,
-            ssnit,
-            tin,
-            updatedAt,
-            _id,
-            __v,
-            dateCommenced,
-            createdAt,
-            ...rest
-          }: any) => ({
-            name: `${firstName} ${lastName}`,
             ...rest,
-            dateCommenced: new Date(createdAt).toLocaleDateString(),
-            createdAt: new Date(createdAt).toLocaleDateString(),
-            id: "001",
           })
         );
-        console.log("transformed employees:", transformed);
-
-        setData(transformed as unknown as StaffType[]);
+        setData(transformed);
       })
       .catch((err) => console.error("error fetching staff:", err));
   }, []);
@@ -127,7 +111,13 @@ const Staff = () => {
         <CustomTable
           columns={columns}
           initialData={data}
-          onRowClick={(id) => navigate(`/staff/${id}`)}
+          onRowClick={(row) =>
+            navigate(`/staff/${row._id}`, {
+              state: {
+                staffDetails: row,
+              },
+            })
+          }
         />
       </Box>
       <Flex justify="flex-end">

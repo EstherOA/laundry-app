@@ -11,7 +11,7 @@ import {
 interface CustomTableProps {
   initialData: any[];
   columns: any[];
-  onRowClick: (id: string) => void;
+  onRowClick: (id: any) => void;
 }
 
 const CustomTable = ({
@@ -20,7 +20,7 @@ const CustomTable = ({
   onRowClick,
 }: CustomTableProps) => {
   const [rowSelection, setRowSelection] = useState({});
-  const [data, setData] = useState(initialData);
+  // const [data, setData] = useState(initialData);
 
   const columnsWithSelect = useMemo<ColumnDef<any>[]>(
     () => [
@@ -54,7 +54,7 @@ const CustomTable = ({
   );
 
   const table = useReactTable({
-    data,
+    data: initialData,
     columns: columnsWithSelect,
     state: {
       rowSelection,
@@ -92,7 +92,12 @@ const CustomTable = ({
       <tbody>
         {table.getRowModel().rows.map((row) => {
           return (
-            <tr key={row.id} onClick={() => onRowClick(row.id)}>
+            <tr
+              key={row.id}
+              onClick={() => {
+                onRowClick(row.original);
+              }}
+            >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>

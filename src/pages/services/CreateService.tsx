@@ -21,15 +21,7 @@ import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import services from "../../api/services";
 import { useQuery } from "@tanstack/react-query";
-
-interface ServiceFormValues {
-  itemName: string;
-  serviceType: string;
-  duration: number;
-  price: number;
-  quantity: number;
-  description: string;
-}
+import { ServiceFormValues } from "../../utils/types";
 
 const validationSchema = Yup.object({
   itemName: Yup.string().required("Item name is required"),
@@ -44,20 +36,17 @@ const CreateService = () => {
 
   const initialValues: ServiceFormValues = {
     itemName: "",
-    serviceType: "",
+    serviceType: "washing",
     duration: 1,
     price: 0,
     quantity: 1,
     description: "",
+    serviceId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      console.log("values:", values);
-
       const res = await services.addService(token!, values);
-      console.log("added service:", res);
-
       actions.setSubmitting(false);
       toast({
         description: "Service created successfully",
@@ -146,9 +135,9 @@ const CreateService = () => {
                     fontSize="14px"
                     placeholder="Select service type"
                   >
-                    <option value="option1">Washing</option>
-                    <option value="option2">Dry Cleaning</option>
-                    <option value="option3">Ironing</option>
+                    <option value="washing">Washing</option>
+                    <option value="dry-cleaning">Dry Cleaning</option>
+                    <option value="ironing">Ironing</option>
                   </Select>
                   <FormErrorMessage>{errors.serviceType}</FormErrorMessage>
                 </FormControl>

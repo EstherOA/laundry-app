@@ -12,7 +12,7 @@ import CreateOrder from "./CreateOrder";
 import ViewOrder from "./ViewOrder";
 import EditOrder from "./EditOrder";
 import { SearchIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   createColumnHelper,
   flexRender,
@@ -22,65 +22,20 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import FilterIcon from "../../assets/filter.svg";
 import { CustomBadge } from "../../components";
-
-type OrderStatus =
-  | "pending"
-  | "cancelled"
-  | "overdue"
-  | "complete"
-  | "almost-due";
-type PaymentStatus = "none" | "partial" | "full";
-
-type Order = {
-  id: string;
-  items: string;
-  total: number;
-  orderStatus: OrderStatus;
-  customerName: string;
-  createdBy: string;
-  createdAt: string;
-  paymentStatus: PaymentStatus;
-};
+import { Order } from "../../utils/types";
+import orders from "../../api/orders";
+import { useQuery } from "@tanstack/react-query";
 
 const Orders = () => {
   const columnHelper = createColumnHelper<Order>();
   const navigate = useNavigate();
 
-  const [data, setData] = useState<Order[]>([
-    {
-      id: "0",
-      items: "1x Shirt, 2x Blouse, 1x Jeans",
-      total: 300,
-      orderStatus: "almost-due",
-      customerName: "John Doe",
-      createdBy: "Bill Rogan",
-      createdAt: "12-03-2024",
-      paymentStatus: "full",
-    },
-    {
-      id: "1",
-      items: "1x Shirt, 2x Blouse, 1x Jeans",
-      total: 300,
-      orderStatus: "complete",
-      customerName: "John Doe",
-      createdBy: "Bill Rogan",
-      createdAt: "12-03-2024",
-      paymentStatus: "none",
-    },
-    {
-      id: "2",
-      items: "1x Shirt, 2x Blouse, 1x Jeans",
-      total: 300,
-      orderStatus: "pending",
-      customerName: "John Doe",
-      createdBy: "Bill Rogan",
-      createdAt: "12-03-2024",
-      paymentStatus: "partial",
-    },
-  ]);
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+
+  const [data, setData] = useState<Order[]>([]);
 
   const columns = [
-    columnHelper.accessor("id", {
+    columnHelper.accessor("orderId", {
       id: "id",
       cell: (info) => info.getValue(),
       header: "Order ID",
@@ -90,7 +45,7 @@ const Orders = () => {
       cell: (info) => info.getValue(),
       header: "Items",
     }),
-    columnHelper.accessor("total", {
+    columnHelper.accessor("totalAmount", {
       id: "total",
       cell: (info) => info.getValue(),
       header: "Total Amount",
@@ -139,6 +94,19 @@ const Orders = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const allOrders = await orders.getOrders(token!);
+
+        setData(allOrders);
+      } catch (error) {
+        console.error("error fetching orders:", error);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

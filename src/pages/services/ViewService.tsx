@@ -7,9 +7,12 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewService = () => {
+  const {
+    state: { serviceDetails },
+  } = useLocation();
   const navigate = useNavigate();
 
   return (
@@ -35,42 +38,46 @@ const ViewService = () => {
           cursor="pointer"
         />
         <Text fontSize="28px" fontWeight="semibold" mb="32px">
-          Service #20
+          Service {serviceDetails._id}
         </Text>
       </Flex>
       <Box>
         <SimpleGrid columns={3} gap={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Item Name</Text>
-            <Text>Shirt</Text>
+            <Text>{serviceDetails.itemName}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Service Type</Text>
-            <Text>Washing</Text>
+            <Text>{serviceDetails.serviceType}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Average Duration</Text>
-            <Text>2 Days</Text>
+            <Text>{serviceDetails.duration}</Text>
           </Flex>
         </SimpleGrid>
         <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Price</Text>
-            <Text>30.00</Text>
+            <Text>GHS {serviceDetails.price}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Description</Text>
-            <Text>Adult shirt male</Text>
+            <Text>{serviceDetails.description}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Created At</Text>
-            <Text>13th May, 2024</Text>
+            <Text>
+              {new Date(serviceDetails.createdAt).toLocaleDateString()}
+            </Text>
           </Flex>
         </SimpleGrid>
         <SimpleGrid columns={3} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Last Updated</Text>
-            <Text>13th May, 2024</Text>
+            <Text>
+              {new Date(serviceDetails.updatedAt).toLocaleDateString()}
+            </Text>
           </Flex>
         </SimpleGrid>
       </Box>
@@ -79,7 +86,13 @@ const ViewService = () => {
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}
           color="white"
-          onClick={() => navigate("/services/20/edit")}
+          onClick={() =>
+            navigate(`/services/${serviceDetails._id}/edit`, {
+              state: {
+                serviceDetails,
+              },
+            })
+          }
         >
           Edit
         </Button>

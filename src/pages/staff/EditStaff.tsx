@@ -13,27 +13,14 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import staff from "../../api/staff";
 import { FileUpload } from "../../components";
-
-interface StaffFormValues {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  address: string;
-  password: string;
-  role: string;
-  dateCommenced: Date;
-  ssnit: string;
-  tin: string;
-  salary: number;
-  shift: string;
-  contract: string;
-}
+import { StaffFormValues } from "../../utils/types";
+import { format } from "date-fns";
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
@@ -54,25 +41,13 @@ const validationSchema = Yup.object({
 });
 
 const EditStaff = () => {
+  const {
+    state: { staffDetails },
+  } = useLocation();
   const navigate = useNavigate();
 
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
-
-  const initialValues: StaffFormValues = {
-    firstName: "",
-    lastName: "",
-    address: "",
-    password: "",
-    phoneNumber: "",
-    role: "",
-    ssnit: "",
-    tin: "",
-    shift: "",
-    salary: 0,
-    dateCommenced: new Date(),
-    contract: "",
-  };
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
@@ -117,14 +92,20 @@ const EditStaff = () => {
           left="150px"
           variant="ghost"
           onClick={() => {
-            navigate("/customers");
+            navigate("/staff");
           }}
           cursor="pointer"
         />
         <Text textStyle="h1">Edit Employee #20</Text>
       </Flex>
       <Formik
-        initialValues={initialValues}
+        initialValues={{
+          ...(staffDetails as StaffFormValues),
+          dateCommenced: format(
+            new Date(staffDetails.dateCommenced),
+            "yyyy-MM-dd"
+          ),
+        }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -238,8 +219,8 @@ const EditStaff = () => {
                       fontSize="14px"
                       placeholder="Select role"
                     >
-                      <option value="option1">Admin</option>
-                      <option value="option2">Employee</option>
+                      <option value="admin">Admin</option>
+                      <option value="employee">Employee</option>
                     </Select>
                     <FormErrorMessage>{errors.role}</FormErrorMessage>
                   </FormControl>
@@ -325,8 +306,8 @@ const EditStaff = () => {
                       fontSize="14px"
                       placeholder="Select shift"
                     >
-                      <option value="option1">Even Days</option>
-                      <option value="option2">Odd Days</option>
+                      <option value="even">Even Days</option>
+                      <option value="odd">Odd Days</option>
                     </Select>
                     <FormErrorMessage>{errors.shift}</FormErrorMessage>
                   </FormControl>

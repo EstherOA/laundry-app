@@ -9,57 +9,27 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CreateCustomer from "./CreateCustomer";
 import EditCustomer from "./EditCustomer";
 import ViewCustomer from "./ViewCustomer";
 import FilterIcon from "../../assets/filter.svg";
-
-type Customer = {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  address: string;
-  createdAt: string;
-};
+import { useQuery } from "@tanstack/react-query";
+import customers from "../../api/customers";
+import CustomTable from "../../components/table";
+import { Customer } from "../../utils/types";
 
 const Customers = () => {
   const columnHelper = createColumnHelper<Customer>();
   const navigate = useNavigate();
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
-  const [data, setData] = useState<Customer[]>([
-    {
-      id: "0",
-      name: "John Doe",
-      phoneNumber: "05000101232",
-      createdAt: "12-03-2024",
-      address: "Kejetia main lane",
-    },
-    {
-      id: "1",
-      name: "Billy Rogan",
-      phoneNumber: "05000101232",
-      createdAt: "12-03-2024",
-      address: "Kejetia main lane",
-    },
-    {
-      id: "2",
-      name: "Jane Doe",
-      phoneNumber: "05000101232",
-      createdAt: "12-03-2024",
-      address: "Kejetia main lane",
-    },
-  ]);
+  const [data, setData] = useState<Customer[]>([]);
 
   const columns = [
-    columnHelper.accessor("id", {
+    columnHelper.accessor("customerId", {
       id: "id",
       cell: (info) => info.getValue(),
       header: "Customer ID",
@@ -81,16 +51,35 @@ const Customers = () => {
     }),
     columnHelper.accessor("createdAt", {
       id: "createdAt",
-      cell: (info) => info.getValue(),
+      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       header: "Date Created",
     }),
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await customers.getCustomers(token!);
+        return res;
+      } catch (error) {
+        console.error("error fetching services:", error);
+      }
+    };
+    fetchCustomers()
+      .then((data) => {
+        if (!Array.isArray(data)) throw new Error("Invalid customer data!");
+        const transformed = data.map(
+          ({ firstName, lastName, __v, ...rest }: any) => ({
+            name: `${firstName} ${lastName}`,
+            firstName,
+            lastName,
+            ...rest,
+          })
+        );
+        setData(transformed);
+      })
+      .catch((err) => console.error("error fetching customers:", err));
+  }, []);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
@@ -107,35 +96,17 @@ const Customers = () => {
         </InputGroup>
       </Flex>
       <Box mb="70px" mt="48px">
-        <table>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} onClick={() => navigate(`/customers/${row.id}`)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <CustomTable
+          columns={columns}
+          initialData={data}
+          onRowClick={(row) =>
+            navigate(`/customers/${row._id}`, {
+              state: {
+                customerDetails: row,
+              },
+            })
+          }
+        />
       </Box>
       <Flex justify="flex-end">
         <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>

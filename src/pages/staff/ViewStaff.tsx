@@ -8,9 +8,12 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewStaff = () => {
+  const {
+    state: { staffDetails },
+  } = useLocation();
   const navigate = useNavigate();
 
   return (
@@ -36,17 +39,17 @@ const ViewStaff = () => {
           cursor="pointer"
         />
         <Text fontSize="28px" fontWeight="semibold" mb="32px">
-          Customer #20
+          Employee #{staffDetails.id}
         </Text>
       </Flex>
       <SimpleGrid columns={4} gap={10}>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Full Name</Text>
-          <Text>John Doe</Text>
+          <Text>{staffDetails.name}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Phone Number</Text>
-          <Text>2 Days</Text>
+          <Text>{staffDetails.phoneNumber}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Flex alignItems="center">
@@ -59,27 +62,27 @@ const ViewStaff = () => {
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Role</Text>
-          <Text>Admin</Text>
+          <Text>{staffDetails.role}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">SSNIT</Text>
-          <Text>1123</Text>
+          <Text>{staffDetails.ssnit}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">TIN</Text>
-          <Text>1123</Text>
+          <Text>{staffDetails.tin}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Date Commenced</Text>
-          <Text>13th May, 2024</Text>
+          <Text>{staffDetails.dateCommenced}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Salary</Text>
-          <Text>1123</Text>
+          <Text>{staffDetails.salary}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Shift</Text>
-          <Text>1123</Text>
+          <Text>{staffDetails.shift}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Contract</Text>
@@ -90,11 +93,11 @@ const ViewStaff = () => {
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Created At</Text>
-          <Text>13th May, 2024</Text>
+          <Text>{staffDetails.createdAt}</Text>
         </Flex>
         <Flex flexDir="column" gap={1}>
           <Text textStyle="infoTitle">Last Updated</Text>
-          <Text>13th May, 2024</Text>
+          <Text>{staffDetails.updatedAt}</Text>
         </Flex>
       </SimpleGrid>
       <Flex justifyContent="flex-end" gap={4} mt="64px">
@@ -102,7 +105,11 @@ const ViewStaff = () => {
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}
           color="white"
-          onClick={() => navigate("/staff/20/edit")}
+          onClick={() =>
+            navigate(`/staff/${staffDetails._id}/edit`, {
+              state: { staffDetails },
+            })
+          }
         >
           Edit
         </Button>
