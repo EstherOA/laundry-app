@@ -57,11 +57,12 @@ export interface LoginPayload {
 
 export interface OrderItem {
   id: number;
+  itemName: string;
   serviceId: string;
   serviceType: string;
   quantity: string;
   price: string;
-  dueDate: number;
+  duration: number;
 }
 
 export interface Order {
@@ -70,18 +71,27 @@ export interface Order {
   items: Service[];
   totalAmount: number;
   orderStatus: OrderStatus;
-  customerName: {
+  customer: {
     name: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    address: string;
+    deliveryNotes: string;
+    landmark: string;
     customerId: string;
   };
-  createdBy: string;
   createdAt: string;
   orderDate: string;
-  deliveredBy: string;
+  deliveredBy: {
+    name: string;
+    staffId: string;
+  };
   paymentStatus: PaymentStatus;
   invoiceId: string;
   payments: Payment[];
   deliveryDate: string;
+  dueDate: string;
   recordedBy: {
     name: string;
     staffId: string;
@@ -92,7 +102,20 @@ export interface Order {
   };
 }
 
-interface Payment {}
+export interface Payment {
+  paymentId: string;
+  mode: PaymentMode;
+  amount: number;
+  receipt: string;
+  sender: string;
+  senderPhoneNumber: string;
+  processedBy: {
+    name: string;
+    staffId: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface Customer {
   _id: string;
@@ -151,8 +174,34 @@ export type ServiceFormValues = Omit<
 >;
 
 export type OrderFormValues = Omit<
-  Service,
-  "_id" | "createdAt" | "updatedAt" | "purchasedBy"
+  Order,
+  | "_id"
+  | "createdAt"
+  | "updatedAt"
+  | "customer"
+  | "orderStatus"
+  | "orderDate"
+  | "deliveredBy"
+  | "deliveryDate"
+  | "recordedBy"
+  | "paymentStatus"
+  | "invoiceId"
+  | "payments"
+  | "processedBy"
+  | "items"
 > & {
-  purchasedBy: string;
+  processedBy: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerPhoneNumber: string;
+  address: string;
+  landmark: string;
+  deliveryNotes: string;
+};
+
+export type PaymentFormValues = Omit<
+  Payment,
+  "paymentId" | "createdAt" | "updatedAt" | "processedBy"
+> & {
+  processedBy: string;
 };

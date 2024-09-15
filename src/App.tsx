@@ -28,7 +28,7 @@ import {
   ResetPassword,
   ChangePassword,
 } from "./pages";
-import { Layout, ProtectedRoute } from "./components";
+import { Invoice, Layout, ProtectedRoute } from "./components";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +63,10 @@ const router = createBrowserRouter([
           {
             path: "new",
             element: <CreateOrder />,
+          },
+          {
+            path: ":orderId/invoice/:invoiceId",
+            element: <Invoice />,
           },
         ],
       },

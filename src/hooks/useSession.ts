@@ -3,8 +3,28 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
+import { jwtDecode } from "jwt-decode";
 import { BASE_URL } from "../utils/constants";
 import { LoginPayload, LoginResponse } from "../utils/types";
+
+const getAuthUser = async (token: string) => {
+  const id = (jwtDecode(token) as any).userId;
+
+  const url = `${BASE_URL}/staff/${id}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Login failed");
+  }
+
+  return await response.json();
+};
 
 export const useLogin = (): UseMutationResult<
   LoginResponse,
@@ -41,4 +61,15 @@ export const useToken = () => {
   });
 
   return token;
+};
+
+export const useUser = () => {
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+
+  if (!token) throw new Error("jwt token not found!");
+  const { data: user } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: () => getAuthUser(token),
+  });
+  return user;
 };

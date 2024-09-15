@@ -7,17 +7,65 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import { CustomBadge, Invoice } from "../../components";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CustomBadge } from "../../components";
+import CustomTable from "../../components/table";
+import { Payment } from "../../utils/types";
+import { createColumnHelper } from "@tanstack/react-table";
 
 const ViewOrder = () => {
+  const {
+    state: { orderDetails },
+  } = useLocation();
   const navigate = useNavigate();
+  const columnHelper = createColumnHelper<Payment>();
 
-  const handleViewInvoice = () => {};
+  const paymentColumns = [
+    columnHelper.accessor("paymentId", {
+      id: "id",
+      cell: (info) => info.getValue(),
+      header: "Payment ID",
+    }),
+    columnHelper.accessor("mode", {
+      id: "mode",
+      cell: (info) => info.getValue(),
+      header: "Mode",
+    }),
+    columnHelper.accessor("amount", {
+      id: "amount",
+      cell: (info) => info.getValue(),
+      header: "Amount",
+    }),
+    columnHelper.accessor("sender", {
+      id: "sender",
+      cell: (info) => info.getValue(),
+      header: "Sender",
+    }),
+    columnHelper.accessor("processedBy", {
+      id: "processedBy",
+      cell: (info) => info.getValue().name,
+      header: "Processed By",
+    }),
+    columnHelper.accessor("receipt", {
+      id: "receiptf",
+      cell: (info) => info.getValue(),
+      header: "Receipt",
+    }),
+    columnHelper.accessor("createdAt", {
+      id: "createdAt",
+      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+      header: "Date Created",
+    }),
+  ];
+
+  const handleViewInvoice = () => {
+    navigate(`invoice/${orderDetails.invoiceId}`, {
+      state: { orderDetails },
+    });
+  };
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
-      {/* <Invoice /> */}
       <Box>
         <Flex
           w="100%"
@@ -40,7 +88,7 @@ const ViewOrder = () => {
             cursor="pointer"
           />
           <Text fontSize="28px" fontWeight="semibold">
-            Order #20
+            Order #{orderDetails._id}
           </Text>
           <CustomBadge title="pending" withDot badgeStyle={{ ml: 4 }} />
         </Flex>
@@ -52,24 +100,26 @@ const ViewOrder = () => {
         >
           Order Details
         </Text>
-        <SimpleGrid columns={4} gap={10}>
-          <Flex flexDir="column" gap={1}>
-            <Text textStyle="infoTitle">Item Name</Text>
-            <Text>Shirt</Text>
-          </Flex>
-          <Flex flexDir="column" gap={1}>
-            <Text textStyle="infoTitle">Service</Text>
-            <Text>Washing</Text>
-          </Flex>
-          <Flex flexDir="column" gap={1}>
-            <Text textStyle="infoTitle">Quantity</Text>
-            <Text>2</Text>
-          </Flex>
-          <Flex flexDir="column" gap={1}>
-            <Text textStyle="infoTitle">Price</Text>
-            <Text>20.00</Text>
-          </Flex>
-        </SimpleGrid>
+        {orderDetails.items.map((item: any) => (
+          <SimpleGrid columns={4} gap={10} key={item._id} mb={4}>
+            <Flex flexDir="column" gap={1}>
+              <Text textStyle="infoTitle">Item Name</Text>
+              <Text>{item.itemName}</Text>
+            </Flex>
+            <Flex flexDir="column" gap={1}>
+              <Text textStyle="infoTitle">Service</Text>
+              <Text>{item.serviceType}</Text>
+            </Flex>
+            <Flex flexDir="column" gap={1}>
+              <Text textStyle="infoTitle">Quantity</Text>
+              <Text>{item.quantity}</Text>
+            </Flex>
+            <Flex flexDir="column" gap={1}>
+              <Text textStyle="infoTitle">Price</Text>
+              <Text>{item.price}</Text>
+            </Flex>
+          </SimpleGrid>
+        ))}
       </Box>
       <Box>
         <Text
@@ -84,29 +134,29 @@ const ViewOrder = () => {
         <SimpleGrid columns={4} gap={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Customer ID</Text>
-            <Text>000123</Text>
+            <Text>{orderDetails.customer.customerId}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Full Name</Text>
-            <Text>Jane Doe</Text>
+            <Text>{`${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Phone Number</Text>
-            <Text>0552342348</Text>
+            <Text>{orderDetails.customer.phoneNumber}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Address</Text>
-            <Text>Kejetia</Text>
+            <Text>{orderDetails.customer.address}</Text>
           </Flex>
         </SimpleGrid>
         <SimpleGrid columns={4} gap={10} mt={10}>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Landmark</Text>
-            <Text>Old Presbyterian Church</Text>
+            <Text>{orderDetails.customer.landmark}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Delivery notes</Text>
-            <Text>The blue house beside the momo vendor</Text>
+            <Text>{orderDetails.customer.deliveryNotes}</Text>
           </Flex>
         </SimpleGrid>
       </Box>
@@ -114,14 +164,22 @@ const ViewOrder = () => {
         <Text textAlign="center" textStyle="h2" mt="56px" mb="32px">
           Payment History
         </Text>
-        {/*TODO: add table for payment history */}
+        <CustomTable
+          columns={paymentColumns}
+          initialData={orderDetails.payments}
+          onRowClick={() => {}}
+        />
       </Box>
       <Flex mt={10} justifyContent="flex-end" gap={4} position="relative">
         <Button
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}
           color="white"
-          onClick={() => navigate("/orders/20/edit")}
+          onClick={() =>
+            navigate(`/orders/${orderDetails._id}/edit`, {
+              state: { orderDetails },
+            })
+          }
         >
           Edit
         </Button>

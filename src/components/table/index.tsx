@@ -20,7 +20,6 @@ const CustomTable = ({
   onRowClick,
 }: CustomTableProps) => {
   const [rowSelection, setRowSelection] = useState({});
-  // const [data, setData] = useState(initialData);
 
   const columnsWithSelect = useMemo<ColumnDef<any>[]>(
     () => [

@@ -32,6 +32,16 @@ export default {
     return response.data;
   },
 
+  async addPayment(jwt: string, id: string, data: any) {
+    const url = `${BASE_URL}/orders/${id}/payments`;
+    const response = await axios.put(url, data, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    return response.data;
+  },
+
   async editOrder(jwt: string, id: string, data: any) {
     const url = `${BASE_URL}/orders/${id}`;
     const response = await axios.put(url, data, {

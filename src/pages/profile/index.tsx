@@ -12,8 +12,11 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import { useUser } from "../../hooks";
 
 const Profile = () => {
+  const user = useUser();
+
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px="5em" py={7}>
       <Grid templateColumns="1fr 2fr" templateRows="repeat(2, 1fr)" gap={10}>
@@ -39,7 +42,7 @@ const Profile = () => {
         <Flex flexDir="column" justify="space-between">
           <Box>
             <Flex justify="space-between">
-              <Text textStyle="h2">Ama Govenor</Text>
+              <Text textStyle="h2">{`${user.firstName} ${user.lastName}`}</Text>
               <Button
                 px={2}
                 borderRadius="12px"
@@ -54,9 +57,11 @@ const Profile = () => {
                 Edit profile
               </Button>
             </Flex>
-            <Text color="#255DEF">Employee</Text>
+            <Text color="#255DEF">{user.role}</Text>
           </Box>
-          <Text fontSize="1.2rem">Weekend Shift</Text>
+          <Text fontSize="1.2rem" textTransform="capitalize">
+            {user.shift} Shift
+          </Text>
           <Box>
             <Flex>
               <Text fontWeight="600">201</Text>

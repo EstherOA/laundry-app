@@ -12,38 +12,95 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  useToast,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { FileUpload } from "..";
-
-interface PaymentFormValues {
-  mode: string;
-  amount: number;
-  sender: string;
-  proofUrl: string;
-  senderPhoneNumber: string;
-  processedBy: string;
-}
+import { PaymentFormValues, Staff } from "../../utils/types";
+import orders from "../../api/orders";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import staff from "../../api/staff";
+import { useParams } from "react-router-dom";
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const validationSchema = Yup.object({});
+const validationSchema = Yup.object({
+  mode: Yup.string().required("Payment mode is required"),
+  amount: Yup.number().required("Amount is required"),
+  sender: Yup.string().required("Sender is required"),
+  senderPhoneNumber: Yup.string().required("Sender Phone Number is required"),
+  processedBy: Yup.string().required("Employee is required"),
+});
 
 const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
+  const toast = useToast();
+  const { orderId } = useParams();
+
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+
+  const [staffList, setStaffList] = useState<Staff[]>([]);
+
   const initialValues: PaymentFormValues = {
-    mode: "",
+    mode: "cash",
     amount: 0,
     sender: "",
-    proofUrl: "",
     processedBy: "",
     senderPhoneNumber: "",
+    receipt: "",
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (values: any, actions: any) => {
+    try {
+      const processedByStaff = staffList.find(
+        (staff) => staff._id === values.processedBy
+      );
+
+      const res = await orders.addPayment(token!, orderId!, {
+        ...values,
+        processedBy: {
+          staffId: values.processedBy,
+          name: processedByStaff
+            ? `${processedByStaff.firstName} ${processedByStaff.lastName}`
+            : "",
+        },
+      });
+
+      actions.setSubmitting(false);
+      toast({
+        description: "Payment added successfully",
+        position: "top-right",
+        duration: 2500,
+        status: "success",
+        isClosable: true,
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        description: "Failed to add payment",
+        duration: 2500,
+        isClosable: true,
+        status: "error",
+      });
+      console.error("error adding payment:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const allStaff = await staff.getStaff(token!);
+        setStaffList(allStaff);
+      } catch (error) {
+        console.error("error fetching staff:", error);
+      }
+    };
+    fetchStaff();
+  }, []);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -161,10 +218,13 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
                         id="processedBy"
                         h="40px"
                         fontSize="14px"
-                        placeholder="Select payment mode"
+                        placeholder="Select employee"
                       >
-                        <option value="momo">Momo</option>
-                        <option value="cash">Cash</option>
+                        {staffList.map((staff) => (
+                          <option
+                            value={staff._id}
+                          >{`${staff.firstName} ${staff.lastName}`}</option>
+                        ))}
                       </Select>
                       <FormErrorMessage>{errors.processedBy}</FormErrorMessage>
                     </FormControl>

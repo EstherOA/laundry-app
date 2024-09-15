@@ -21,8 +21,9 @@ import * as Yup from "yup";
 import staff from "../../api/staff";
 import services from "../../api/services";
 import { useQuery } from "@tanstack/react-query";
-import { OrderItem, Service, Staff } from "../../utils/types";
+import { OrderFormValues, OrderItem, Service, Staff } from "../../utils/types";
 import orders from "../../api/orders";
+import { useUser } from "../../hooks";
 
 const orderItemSchema = Yup.object({
   itemName: Yup.string().required("Item Name is required"),
@@ -32,11 +33,11 @@ const orderItemSchema = Yup.object({
 });
 
 const orderMainSchema = Yup.object({
-  assignedTo: Yup.string().required("Assignee is required"),
+  processedBy: Yup.string().required("Employee is required"),
   customerFirstName: Yup.string().required("First Name is required"),
   customerLastName: Yup.string().required("Last Name is required"),
   customerPhoneNumber: Yup.string().required("Phone Number is required"),
-  area: Yup.string().required("Area is required"),
+  address: Yup.string().required("Address is required"),
   landmark: Yup.string().required("Landmark is required"),
   deliveryNotes: Yup.string(),
   totalAmount: Yup.number(),
@@ -122,6 +123,9 @@ const OrderItemEntry = ({
                     placeholder="Select item"
                     onChange={async (e) => {
                       const serviceId = e.target.value;
+                      const selectedIndex = e.target.selectedIndex;
+                      const itemName = e.target.options[selectedIndex].text;
+
                       await setFieldValue("serviceId", serviceId);
 
                       const updatedPrice = getItemPrice({
@@ -134,6 +138,7 @@ const OrderItemEntry = ({
                         ...item,
                         serviceId,
                         price: updatedPrice,
+                        itemName,
                       });
                       await setFieldValue("price", updatedPrice);
                     }}
@@ -263,26 +268,30 @@ const CreateOrder = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+  const user = useUser();
 
-  const initialValues = {
-    assignedTo: "",
+  const initialValues: OrderFormValues = {
+    totalAmount: 0,
+    processedBy: "",
     customerFirstName: "",
     customerLastName: "",
     customerPhoneNumber: "",
-    area: "",
+    address: "",
     landmark: "",
     deliveryNotes: "",
     dueDate: format(new Date(), "yyyy-MM-dd"),
     orderId: Date.now().toString(),
   };
+
   const [items, setItems] = useState<OrderItem[]>([
     {
       id: 0,
+      itemName: "",
       serviceId: "",
       serviceType: "",
       quantity: "1",
       price: "",
-      dueDate: 1,
+      duration: 1,
     },
   ]);
   const [staffList, setStaffList] = useState<Staff[]>([]);
@@ -306,10 +315,11 @@ const CreateOrder = () => {
       {
         id: items.length,
         serviceId: "",
+        itemName: "",
         serviceType: "",
         quantity: "1",
         price: "",
-        dueDate: 1,
+        duration: 1,
       },
     ]);
   };
@@ -329,7 +339,7 @@ const CreateOrder = () => {
   const getTotalDuration = useCallback(() => {
     let dueDate = new Date();
     items.map((item) => {
-      dueDate = addDays(dueDate, item.dueDate);
+      dueDate = addDays(dueDate, item.duration);
     });
     return format(dueDate, "yyyy-MM-dd");
   }, [items]);
@@ -348,20 +358,41 @@ const CreateOrder = () => {
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
+      const { customer, processedBy, ...rest } = values;
+
+      const processedByStaff = staffList.find(
+        (staff) => staff._id === processedBy
+      );
+
       const payload = {
-        ...values,
+        ...rest,
         items,
         payments: [],
         paymentStatus: "none",
         invoiceId: `INV${Math.floor(Math.random() * 100000)}-${Math.floor(
           Math.random() * 1000
         )}`,
+        customer: {
+          firstName: values.customerFirstName,
+          lastName: values.customerLastName,
+          phoneNumber: values.customerPhoneNumber,
+          address: values.address,
+          deliveryNotes: values.deliveryNotes,
+          landmark: values.landmark,
+        },
+        orderStatus: "pending",
+        recordedBy: {
+          name: `${user.firstName} ${user.lastName}`,
+          staffId: user._id,
+        },
+        processedBy: {
+          name: processedByStaff
+            ? `${processedByStaff.firstName} ${processedByStaff.lastName}`
+            : "",
+          staffId: processedBy,
+        },
       };
-      console.log("values:", payload);
-
       const res = await orders.addOrder(token!, payload);
-
-      console.log("create order res:", res);
 
       actions.setSubmitting(false);
       toast({
@@ -444,26 +475,33 @@ const CreateOrder = () => {
               <SimpleGrid columns={4} gap={10}>
                 <Flex flexDir="column" gap={1}>
                   <Text textStyle="formLabel">Total Price</Text>
-                  <Input h="32px" type="number" value={totalPrice} readOnly />
+                  <Input
+                    h="32px"
+                    id="totalAmount"
+                    name="totalAmount"
+                    type="number"
+                    value={totalPrice}
+                    readOnly
+                  />
                 </Flex>
-                <Field name="assignedTo">
+                <Field name="processedBy">
                   {({ field }: any) => (
                     <FormControl
-                      isInvalid={!!(errors.assignedTo && touched.assignedTo)}
+                      isInvalid={!!(errors.processedBy && touched.processedBy)}
                     >
                       <FormLabel
-                        htmlFor="assignedTo"
+                        htmlFor="processedBy"
                         fontSize="10px"
                         textStyle="formLabel"
                       >
-                        Assigned To
+                        Processed By
                       </FormLabel>
                       <Select
                         {...field}
                         h="32px"
                         fontSize="14px"
-                        id="assignedTo"
-                        placeholder="Select assignee"
+                        id="processedBy"
+                        placeholder="Select employee"
                       >
                         {staffList.map((staff) => (
                           <option
@@ -472,7 +510,7 @@ const CreateOrder = () => {
                           >{`${staff.firstName} ${staff.lastName}`}</option>
                         ))}
                       </Select>
-                      <FormErrorMessage>{errors.assignedTo}</FormErrorMessage>
+                      <FormErrorMessage>{errors.processedBy}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>
@@ -574,18 +612,20 @@ const CreateOrder = () => {
                     </FormControl>
                   )}
                 </Field>
-                <Field name="area">
+                <Field name="address">
                   {({ field }: any) => (
-                    <FormControl isInvalid={!!(errors.area && touched.area)}>
+                    <FormControl
+                      isInvalid={!!(errors.address && touched.address)}
+                    >
                       <FormLabel
-                        htmlFor="area"
+                        htmlFor="address"
                         fontSize="10px"
                         textStyle="formLabel"
                       >
-                        Area
+                        Address
                       </FormLabel>
-                      <Input {...field} id="area" />
-                      <FormErrorMessage>{errors.area}</FormErrorMessage>
+                      <Input {...field} id="address" />
+                      <FormErrorMessage>{errors.address}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>

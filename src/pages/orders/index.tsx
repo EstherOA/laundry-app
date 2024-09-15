@@ -13,18 +13,14 @@ import ViewOrder from "./ViewOrder";
 import EditOrder from "./EditOrder";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { Link, useNavigate } from "react-router-dom";
 import FilterIcon from "../../assets/filter.svg";
 import { CustomBadge } from "../../components";
 import { Order } from "../../utils/types";
 import orders from "../../api/orders";
 import { useQuery } from "@tanstack/react-query";
+import CustomTable from "../../components/table";
 
 const Orders = () => {
   const columnHelper = createColumnHelper<Order>();
@@ -34,6 +30,12 @@ const Orders = () => {
 
   const [data, setData] = useState<Order[]>([]);
 
+  const getItemString = (data: any) => {
+    const itemString = data
+      .map((item: any) => `${item.itemName} x ${item.quantity}`)
+      .join(", ");
+    return itemString;
+  };
   const columns = [
     columnHelper.accessor("orderId", {
       id: "id",
@@ -42,7 +44,7 @@ const Orders = () => {
     }),
     columnHelper.accessor("items", {
       id: "items",
-      cell: (info) => info.getValue(),
+      cell: (info) => getItemString(info.getValue()),
       header: "Items",
     }),
     columnHelper.accessor("totalAmount", {
@@ -61,19 +63,20 @@ const Orders = () => {
       ),
       header: "Order Status",
     }),
-    columnHelper.accessor("customerName", {
+    columnHelper.accessor("customer", {
       id: "customerName",
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        `${info.getValue().firstName} ${info.getValue().lastName}`,
       header: "Customer Name",
     }),
-    columnHelper.accessor("createdBy", {
-      id: "createdBy",
-      cell: (info) => info.getValue(),
-      header: "Created By",
+    columnHelper.accessor("processedBy", {
+      id: "processedBy",
+      cell: (info) => info.getValue().name,
+      header: "Processed By",
     }),
     columnHelper.accessor("createdAt", {
       id: "createdAt",
-      cell: (info) => info.getValue(),
+      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       header: "Date Created",
     }),
     columnHelper.accessor("paymentStatus", {
@@ -89,23 +92,18 @@ const Orders = () => {
     }),
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const allOrders = await orders.getOrders(token!);
-
-        setData(allOrders);
+        return await orders.getOrders(token!);
       } catch (error) {
         console.error("error fetching orders:", error);
       }
     };
-    fetchOrders();
+    fetchOrders().then((orders) => {
+      if (!Array.isArray(orders)) throw new Error("Invalid order data!");
+      setData(orders);
+    });
   }, []);
 
   return (
@@ -123,35 +121,17 @@ const Orders = () => {
         </InputGroup>
       </Flex>
       <Box mb="70px" mt="48px">
-        <table>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} onClick={() => navigate(`/orders/${row.id}`)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <CustomTable
+          columns={columns}
+          initialData={data}
+          onRowClick={(row) =>
+            navigate(`/orders/${row._id}`, {
+              state: {
+                orderDetails: row,
+              },
+            })
+          }
+        />
       </Box>
       <Flex justify="flex-end">
         <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>

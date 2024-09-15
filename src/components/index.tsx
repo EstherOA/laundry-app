@@ -5,3 +5,4 @@ export { default as FileUpload } from "./upload";
 export { default as Invoice } from "./invoice";
 export { default as PaymentModal } from "./payment";
 export { default as CustomBadge } from "./badge";
+export { default as CustomTable } from "./table";
