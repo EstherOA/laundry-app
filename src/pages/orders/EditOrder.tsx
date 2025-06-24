@@ -18,6 +18,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { CustomBadge, PaymentModal, CustomTable } from "../../components";
 import {
+  Order,
   OrderFormValues,
   OrderItem,
   Payment,
@@ -286,17 +287,18 @@ const EditOrder = () => {
 
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [items, setItems] = useState<OrderItem[]>(orderDetails.items);
+  const [order, setOrder] = useState<Order>(orderDetails);
 
   const initialValues: OrderFormValues = {
-    ...orderDetails,
-    customerFirstName: orderDetails.customer.firstName,
-    customerLastName: orderDetails.customer.lastName,
-    customerPhoneNumber: orderDetails.customer.phoneNumber,
-    address: orderDetails.customer.address,
-    landmark: orderDetails.customer.landmark,
-    deliveryNotes: orderDetails.customer.deliveryNotes,
-    dueDate: format(new Date(orderDetails.dueDate), "yyyy-MM-dd"),
-    processedBy: orderDetails.processedBy.staffId,
+    ...order,
+    customerFirstName: order.customer.firstName,
+    customerLastName: order.customer.lastName,
+    customerPhoneNumber: order.customer.phoneNumber,
+    address: order.customer.address,
+    landmark: order.customer.landmark,
+    deliveryNotes: order.customer.deliveryNotes,
+    dueDate: format(new Date(order.dueDate), "yyyy-MM-dd"),
+    processedBy: order.processedBy.staffId,
   };
 
   const paymentColumns = [
@@ -385,6 +387,16 @@ const EditOrder = () => {
     return format(dueDate, "yyyy-MM-dd");
   }, [items]);
 
+  const updateOrder = async () => {
+    try {
+      const updated = await orders.getOrderById(token!, order._id);
+
+      if (updated) setOrder(updated);
+    } catch (error) {
+      console.error("error fetching orders:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchStaff = async () => {
       try {
@@ -433,9 +445,10 @@ const EditOrder = () => {
           staffId: processedBy,
         },
       };
-      const res = await orders.editOrder(token!, orderDetails._id, payload);
+      const res = await orders.editOrder(token!, order._id, payload);
 
       actions.setSubmitting(false);
+      await updateOrder();
       toast({
         description: "Order updated successfully",
         position: "top-right",
@@ -473,18 +486,14 @@ const EditOrder = () => {
           left="150px"
           variant="ghost"
           onClick={() => {
-            navigate(`/orders/${orderDetails._id}`, {
-              state: { orderDetails },
+            navigate(`/orders/${order._id}`, {
+              state: { orderDetails: order },
             });
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Order #{orderDetails._id}</Text>
-        <CustomBadge
-          title={orderDetails.orderStatus}
-          withDot
-          badgeStyle={{ ml: 4 }}
-        />
+        <Text textStyle="h1">Edit Order #{order._id}</Text>
+        <CustomBadge title={order.orderStatus} withDot badgeStyle={{ ml: 4 }} />
       </Flex>
       <Text textAlign="center" textStyle="h2" mb="32px">
         Order Details
@@ -521,17 +530,30 @@ const EditOrder = () => {
           <Form>
             <Box>
               <SimpleGrid columns={4} gap={10}>
-                <Flex flexDir="column" gap={1}>
-                  <Text textStyle="formLabel">Total Price</Text>
-                  <Input
-                    h="32px"
-                    id="totalAmount"
-                    name="totalAmount"
-                    type="number"
-                    value={totalPrice}
-                    readOnly
-                  />
-                </Flex>
+                <Field name="processedBy">
+                  {({ field }: any) => (
+                    <FormControl
+                      isInvalid={!!(errors.processedBy && touched.processedBy)}
+                    >
+                      <FormLabel
+                        htmlFor="processedBy"
+                        fontSize="10px"
+                        textStyle="formLabel"
+                      >
+                        Total Price
+                      </FormLabel>
+                      <Input
+                        {...field}
+                        h="32px"
+                        id="totalAmount"
+                        name="totalAmount"
+                        type="number"
+                        value={totalPrice}
+                        readOnly
+                      />
+                    </FormControl>
+                  )}
+                </Field>{" "}
                 <Field name="processedBy">
                   {({ field }: any) => (
                     <FormControl
@@ -725,7 +747,7 @@ const EditOrder = () => {
               </Text>
               <CustomTable
                 columns={paymentColumns}
-                initialData={orderDetails.payments}
+                initialData={order.payments}
                 onRowClick={() => {}}
               />
               <Flex justifyContent="flex-end" mt={4}>
@@ -746,7 +768,13 @@ const EditOrder = () => {
           </Form>
         )}
       </Formik>
-      <PaymentModal isOpen={isOpen} onClose={onClose} />
+      <PaymentModal
+        isOpen={isOpen}
+        onClose={async () => {
+          await updateOrder();
+          onClose();
+        }}
+      />
     </Box>
   );
 };

@@ -99,7 +99,7 @@ const CustomTable = ({
             >
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <td key={cell.id}>
+                  <td key={cell.id} style={{ textTransform: "capitalize" }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 );

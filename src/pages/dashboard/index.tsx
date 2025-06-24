@@ -14,7 +14,9 @@ import { useEffect, useState } from "react";
 const Dashboard = () => {
   const [stats, setStats] = useState();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const orderStats = {};
+  }, []);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>

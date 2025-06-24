@@ -10,10 +10,12 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "../../hooks";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const user = useUser();
 
   const handleLogout = async () => {
     queryClient.removeQueries({ queryKey: ["userToken"] });
@@ -35,7 +37,7 @@ const Navbar = () => {
       </Flex>
       {/* user profile */}
       <Flex alignItems="center" gap={2}>
-        <Text>Ama</Text>
+        <Text>{user?.firstName}</Text>
         <Avatar />
         <Menu>
           <MenuButton as={TriangleDownIcon} />

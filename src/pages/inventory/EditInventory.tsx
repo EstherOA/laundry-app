@@ -21,6 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import inventory from "../../api/inventory";
 import { FileUpload } from "../../components";
 import { InventoryFormValues } from "../../utils/types";
+import { format } from "date-fns";
 
 const validationSchema = Yup.object({
   itemName: Yup.string().required("Item Name is required"),
@@ -43,10 +44,22 @@ const EditInventory = () => {
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
+  const initialValues: InventoryFormValues = {
+    ...inventoryDetails,
+    datePurchased: format(
+      new Date(inventoryDetails.datePurchased),
+      "yyyy-MM-dd"
+    ),
+  };
+
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const res = await inventory.addItem(token!, values);
-      console.log("added item:", res);
+      const res = await inventory.editItem(
+        token!,
+        inventoryDetails._id,
+        values
+      );
+      console.log("edited item:", res);
 
       actions.setSubmitting(false);
       toast({
@@ -59,12 +72,12 @@ const EditInventory = () => {
       navigate("/inventory");
     } catch (error) {
       toast({
-        description: "Failed to add item",
+        description: "Failed to edit item",
         duration: 2500,
         isClosable: true,
         status: "error",
       });
-      console.error("error adding item:", error);
+      console.error("error editing item:", error);
     }
   };
 
@@ -93,7 +106,7 @@ const EditInventory = () => {
         <Text textStyle="h1">Edit Item #{inventoryDetails._id}</Text>
       </Flex>
       <Formik
-        initialValues={inventoryDetails as InventoryFormValues}
+        initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
