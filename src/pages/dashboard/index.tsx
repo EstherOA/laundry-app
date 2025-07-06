@@ -10,13 +10,52 @@ import {
 } from "@chakra-ui/react";
 import { DemoChart } from "../../components";
 import { useEffect, useState } from "react";
+import { useOrders } from "../../hooks";
+import { Order } from "../../utils/types";
 
 const Dashboard = () => {
-  const [stats, setStats] = useState();
+  const { data: orders, isLoading } = useOrders();
+  const [stats, setStats] = useState({
+    ongoing: 0,
+    done: 0,
+    almostDue: 0,
+    overdue: 0,
+  });
 
   useEffect(() => {
-    const orderStats = {};
-  }, []);
+    if (orders && Array.isArray(orders)) {
+      const orderStats = {
+        ongoing: 0,
+        done: 0,
+        almostDue: 0,
+        overdue: 0,
+      };
+
+      orders.forEach((order: Order) => {
+        switch (order.orderStatus) {
+          case "pending":
+            orderStats.ongoing += 1;
+            break;
+          case "complete":
+            orderStats.done += 1;
+            break;
+          case "almost-due":
+            orderStats.almostDue += 1;
+            break;
+          case "overdue":
+            orderStats.overdue += 1;
+            break;
+          case "cancelled":
+            // Cancelled orders are not counted in any category
+            break;
+          default:
+            break;
+        }
+      });
+
+      setStats(orderStats);
+    }
+  }, [orders]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
@@ -30,7 +69,7 @@ const Dashboard = () => {
             <Card bgGradient="radial(#A9FFFF, #86C4C4)">
               <CardBody>
                 <Text color="#007B23" fontSize="44px">
-                  5
+                  {isLoading ? "..." : stats.ongoing}
                 </Text>
                 <Text>Ongoing</Text>
               </CardBody>
@@ -38,7 +77,7 @@ const Dashboard = () => {
             <Card bgGradient="radial(#DAFFD0, #ABE49C)">
               <CardBody>
                 <Text color="#001B79" fontSize="44px">
-                  7
+                  {isLoading ? "..." : stats.done}
                 </Text>
                 <Text>Done</Text>
               </CardBody>
@@ -46,7 +85,7 @@ const Dashboard = () => {
             <Card bgGradient="radial(#FFFBD1, #E4DD9C)">
               <CardBody>
                 <Text color="#001B79" fontSize="44px">
-                  1
+                  {isLoading ? "..." : stats.almostDue}
                 </Text>
                 <Text>Almost Due</Text>
               </CardBody>
@@ -54,7 +93,7 @@ const Dashboard = () => {
             <Card bgGradient="radial(#E9BBB1, #D87D69)">
               <CardBody>
                 <Text color="#8C0000" fontSize="44px">
-                  2
+                  {isLoading ? "..." : stats.overdue}
                 </Text>
                 <Text>Overdue</Text>
               </CardBody>
