@@ -48,7 +48,6 @@ const EditCustomer = () => {
   const handleSubmit = async (values: any, actions: any) => {
     try {
       const res = await customers.editCustomer(token!, "", values);
-      console.log("added customer:", res);
 
       actions.setSubmitting(false);
       toast({
