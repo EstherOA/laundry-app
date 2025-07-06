@@ -11,6 +11,7 @@ import {
 import CreateOrder from "./CreateOrder";
 import ViewOrder from "./ViewOrder";
 import EditOrder from "./EditOrder";
+import ViewInvoice from "./ViewInvoice";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -39,7 +40,7 @@ const Orders = () => {
   const columns = [
     columnHelper.accessor("orderId", {
       id: "id",
-      cell: (info) => info.getValue(),
+      cell: (info) => `#${info.getValue()}`,
       header: "Order ID",
     }),
     columnHelper.accessor("items", {
@@ -49,7 +50,7 @@ const Orders = () => {
     }),
     columnHelper.accessor("totalAmount", {
       id: "total",
-      cell: (info) => info.getValue(),
+      cell: (info) => `GH₵${info.getValue()}`,
       header: "Total Amount",
     }),
     columnHelper.accessor("orderStatus", {
@@ -145,4 +146,4 @@ const Orders = () => {
 };
 
 export default Orders;
-export { ViewOrder, CreateOrder, EditOrder };
+export { ViewOrder, CreateOrder, EditOrder, ViewInvoice };

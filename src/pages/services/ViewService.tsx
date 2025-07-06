@@ -74,7 +74,7 @@ const ViewService = () => {
             cursor="pointer"
           />
           <Text fontSize="28px" fontWeight="semibold" mb="32px">
-            Service #{serviceDetails._id}
+            Service #{serviceDetails.serviceId}
           </Text>
         </Flex>
         <Box>

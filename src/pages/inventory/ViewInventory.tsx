@@ -76,7 +76,7 @@ const ViewInventory = () => {
             cursor="pointer"
           />
           <Text fontSize="28px" fontWeight="semibold">
-            Item #{inventoryDetails._id}
+            Item #{inventoryDetails.itemId}
           </Text>
           <CustomBadge
             title={inventoryDetails.status}
@@ -103,7 +103,7 @@ const ViewInventory = () => {
           </Flex>
           <Flex flexDir="column">
             <Text textStyle="infoTitle">Purchased By</Text>
-            <Text>{inventoryDetails.purchasedBy}</Text>
+            <Text>{inventoryDetails.purchasedBy.name}</Text>
           </Flex>
           <Flex flexDir="column">
             <Text textStyle="infoTitle">Vendor</Text>

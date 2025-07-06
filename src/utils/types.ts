@@ -153,24 +153,24 @@ export interface Inventory {
 
 export type CustomerFormValues = Omit<
   Customer,
-  "_id" | "name" | "createdAt" | "updatedAt"
+  "_id" | "name" | "createdAt" | "updatedAt" | "customerId"
 >;
 
 export type StaffFormValues = Omit<
   Staff,
-  "_id" | "name" | "createdAt" | "updatedAt"
+  "_id" | "name" | "createdAt" | "updatedAt" | "staffId"
 >;
 
 export type InventoryFormValues = Omit<
   Inventory,
-  "_id" | "createdAt" | "updatedAt" | "purchasedBy"
+  "_id" | "createdAt" | "updatedAt" | "purchasedBy" | "itemId"
 > & {
   purchasedBy: string;
 };
 
 export type ServiceFormValues = Omit<
   Service,
-  "_id" | "createdAt" | "updatedAt"
+  "_id" | "createdAt" | "updatedAt" | "serviceId"
 >;
 
 export type OrderFormValues = Omit<
@@ -189,6 +189,7 @@ export type OrderFormValues = Omit<
   | "payments"
   | "processedBy"
   | "items"
+  | "orderId"
 > & {
   processedBy: string;
   customerFirstName: string;

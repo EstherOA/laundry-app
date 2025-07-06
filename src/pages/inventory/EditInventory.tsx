@@ -20,7 +20,8 @@ import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import inventory from "../../api/inventory";
 import { FileUpload } from "../../components";
-import { InventoryFormValues } from "../../utils/types";
+import { useStaff } from "../../hooks";
+import { InventoryFormValues, Staff } from "../../utils/types";
 import { format } from "date-fns";
 
 const validationSchema = Yup.object({
@@ -43,6 +44,7 @@ const EditInventory = () => {
 
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+  const { data: staffList = [] } = useStaff();
 
   const initialValues: InventoryFormValues = {
     ...inventoryDetails,
@@ -54,12 +56,18 @@ const EditInventory = () => {
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const res = await inventory.editItem(
-        token!,
-        inventoryDetails._id,
-        values
+      const found = staffList.find(
+        (sf: Staff) => sf._id === values.purchasedBy
       );
-      console.log("edited item:", res);
+      const foundName = found ? `${found.firstName} ${found.lastName}` : "";
+
+      const res = await inventory.editItem(token!, inventoryDetails._id, {
+        ...values,
+        purchasedBy: {
+          staffId: values.purchasedBy,
+          name: foundName,
+        },
+      });
 
       actions.setSubmitting(false);
       toast({
@@ -103,7 +111,7 @@ const EditInventory = () => {
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Item #{inventoryDetails._id}</Text>
+        <Text textStyle="h1">Edit Item #{inventoryDetails.itemId}</Text>
       </Flex>
       <Formik
         initialValues={initialValues}
@@ -181,9 +189,12 @@ const EditInventory = () => {
                       fontSize="14px"
                       placeholder="Select assignee"
                     >
-                      <option value="option1">John Doe</option>
-                      <option value="option2">Jane Doe</option>
-                      <option value="option3">Billy Rogan</option>
+                      {staffList.map((staff: Staff) => (
+                        <option
+                          value={staff._id}
+                          key={staff._id}
+                        >{`${staff.firstName} ${staff.lastName}`}</option>
+                      ))}
                     </Select>
                     <FormErrorMessage>{errors.purchasedBy}</FormErrorMessage>
                   </FormControl>

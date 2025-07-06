@@ -1,4 +1,4 @@
-import { ArrowBackIcon, RepeatIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, RepeatIcon, DownloadIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import { useDeleteStaff } from "../../hooks";
+import { format } from "date-fns";
 
 const ViewStaff = () => {
   const {
@@ -75,7 +76,7 @@ const ViewStaff = () => {
             cursor="pointer"
           />
           <Text fontSize="28px" fontWeight="semibold" mb="32px">
-            Employee #{staffDetails.id}
+            Employee #{staffDetails.staffId}
           </Text>
         </Flex>
         <SimpleGrid columns={4} gap={10}>
@@ -110,7 +111,9 @@ const ViewStaff = () => {
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Date Commenced</Text>
-            <Text>{staffDetails.dateCommenced}</Text>
+            <Text>
+              {format(new Date(staffDetails.dateCommenced), "dd MMM yyyy")}
+            </Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Salary</Text>
@@ -122,18 +125,22 @@ const ViewStaff = () => {
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Contract</Text>
-            <Flex>
+            <Flex alignItems="center" gap={1}>
               <Text>kofi_contract.pdf</Text>
-              <Icon />
+              <Icon as={DownloadIcon} />
             </Flex>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Created At</Text>
-            <Text>{staffDetails.createdAt}</Text>
+            <Text>
+              {format(new Date(staffDetails.createdAt), "dd MMM yyyy")}
+            </Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Last Updated</Text>
-            <Text>{staffDetails.updatedAt}</Text>
+            <Text>
+              {format(new Date(staffDetails.updatedAt), "dd MMM yyyy")}
+            </Text>
           </Flex>
         </SimpleGrid>
         <Flex justifyContent="flex-end" gap={4} mt="64px">

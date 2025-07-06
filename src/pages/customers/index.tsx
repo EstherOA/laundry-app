@@ -31,7 +31,7 @@ const Customers = () => {
   const columns = [
     columnHelper.accessor("customerId", {
       id: "id",
-      cell: (info) => info.getValue(),
+      cell: (info) => `#${info.getValue()}`,
       header: "Customer ID",
     }),
     columnHelper.accessor("name", {

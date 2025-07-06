@@ -32,7 +32,7 @@ const Inventory = () => {
   const columns = [
     columnHelper.accessor("itemId", {
       id: "id",
-      cell: (info) => info.getValue(),
+      cell: (info) => `#${info.getValue()}`,
       header: "Item ID",
     }),
     columnHelper.accessor("itemName", {

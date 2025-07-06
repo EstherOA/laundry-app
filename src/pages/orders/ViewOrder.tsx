@@ -73,7 +73,7 @@ const ViewOrder = () => {
   ];
 
   const handleViewInvoice = () => {
-    navigate(`invoice/${orderDetails.invoiceId}`, {
+    navigate(`/orders/${orderDetails._id}/invoice/${orderDetails.invoiceId}`, {
       state: { orderDetails },
     });
   };
@@ -124,7 +124,7 @@ const ViewOrder = () => {
               cursor="pointer"
             />
             <Text fontSize="28px" fontWeight="semibold">
-              Order #{orderDetails._id}
+              Order #{orderDetails.orderId}
             </Text>
             <CustomBadge title="pending" withDot badgeStyle={{ ml: 4 }} />
           </Flex>
@@ -152,7 +152,7 @@ const ViewOrder = () => {
               </Flex>
               <Flex flexDir="column" gap={1}>
                 <Text textStyle="infoTitle">Price</Text>
-                <Text>{item.price}</Text>
+                <Text>GH₵ {item.price}</Text>
               </Flex>
             </SimpleGrid>
           ))}

@@ -7,15 +7,12 @@ import {
   GridItem,
   Button,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { useLocation } from "react-router-dom";
+import { Order } from "../../utils/types";
 
-const Invoice = () => {
-  const {
-    state: { orderDetails },
-  } = useLocation();
+const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
   const invoiceRef = useRef(null);
 
   const handleDownloadInvoice = async () => {
@@ -120,7 +117,7 @@ const Invoice = () => {
                 <Text>Price</Text>
               </GridItem>
               {orderDetails.items.map((item: any) => (
-                <>
+                <Fragment key={item.itemId}>
                   <GridItem>
                     <Text textTransform="capitalize">{item.itemName}</Text>
                   </GridItem>
@@ -131,16 +128,16 @@ const Invoice = () => {
                     <Text>{item.quantity}</Text>
                   </GridItem>
                   <GridItem>
-                    <Text>{item.price}</Text>
+                    <Text>GH₵ {item.price}</Text>
                   </GridItem>
-                </>
+                </Fragment>
               ))}
               <GridItem>
                 <Text fontWeight={600}>Total</Text>
               </GridItem>
               <GridItem colSpan={2}></GridItem>
               <GridItem>
-                <Text fontWeight={600}>GHS {orderDetails.totalAmount}</Text>
+                <Text fontWeight={600}>GH₵ {orderDetails.totalAmount}</Text>
               </GridItem>
               <GridItem colSpan={4}>
                 <Text></Text>

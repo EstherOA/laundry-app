@@ -1,5 +1,11 @@
 export { default as Dashboard } from "./dashboard";
-export { default as Orders, ViewOrder, CreateOrder, EditOrder } from "./orders";
+export {
+  default as Orders,
+  ViewOrder,
+  CreateOrder,
+  EditOrder,
+  ViewInvoice,
+} from "./orders";
 export { default as Settings } from "./settings";
 export {
   default as Services,

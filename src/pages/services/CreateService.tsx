@@ -41,7 +41,6 @@ const CreateService = () => {
     price: 0,
     quantity: 1,
     description: "",
-    serviceId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {

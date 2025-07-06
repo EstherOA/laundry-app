@@ -58,7 +58,6 @@ const CreateStaff = () => {
     salary: 0,
     dateCommenced: new Date().toLocaleDateString(),
     contract: "",
-    staffId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {

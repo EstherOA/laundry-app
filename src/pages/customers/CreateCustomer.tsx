@@ -41,7 +41,6 @@ const CreateCustomer = () => {
     address: "",
     deliveryNotes: "",
     phoneNumber: "",
-    customerId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {

@@ -69,7 +69,7 @@ const OrderItemEntry = ({
   }, [token]);
 
   const getServiceTypes = () => {
-    if (!selectedService) return ["Washing", "Dry Cleaning", "Ironing"];
+    if (!selectedService) return ["washing", "dry-cleaning", "ironing"];
 
     const foundItem = serviceList.find((item) => item._id === selectedService);
 
@@ -174,6 +174,7 @@ const OrderItemEntry = ({
                     placeholder="Select service type"
                     onChange={async (e) => {
                       const serviceType = e.target.value;
+
                       await setFieldValue("serviceType", serviceType);
                       const updatedPrice = getItemPrice({
                         ...values,
@@ -190,7 +191,7 @@ const OrderItemEntry = ({
                   >
                     {getServiceTypes().map((service) => (
                       <option value={service} key={service}>
-                        {service}
+                        {service.replace("-", " ")}
                       </option>
                     ))}
                   </Select>
@@ -280,7 +281,6 @@ const CreateOrder = () => {
     landmark: "",
     deliveryNotes: "",
     dueDate: format(new Date(), "yyyy-MM-dd"),
-    orderId: Date.now().toString(),
   };
 
   const [items, setItems] = useState<OrderItem[]>([
@@ -341,7 +341,7 @@ const CreateOrder = () => {
     items.map((item) => {
       dueDate = addDays(dueDate, item.duration);
     });
-    return format(dueDate, "yyyy-MM-dd");
+    return dueDate;
   }, [items]);
 
   useEffect(() => {
@@ -366,6 +366,8 @@ const CreateOrder = () => {
 
       const payload = {
         ...rest,
+        totalAmount: totalPrice,
+        dueDate: getTotalDuration(),
         items,
         payments: [],
         paymentStatus: "none",
@@ -392,6 +394,7 @@ const CreateOrder = () => {
           staffId: processedBy,
         },
       };
+
       const res = await orders.addOrder(token!, payload);
 
       actions.setSubmitting(false);
@@ -528,7 +531,7 @@ const CreateOrder = () => {
                       </FormLabel>
                       <Input
                         {...field}
-                        value={getTotalDuration()}
+                        value={format(getTotalDuration(), "yyyy-MM-dd")}
                         id="dueDate"
                         type="date"
                         h="32px"

@@ -31,7 +31,7 @@ const Services = () => {
   const columns = [
     columnHelper.accessor("serviceId", {
       id: "id",
-      cell: (info) => info.getValue(),
+      cell: (info) => `#${info.getValue()}`,
       header: "Service ID",
     }),
     columnHelper.accessor("itemName", {

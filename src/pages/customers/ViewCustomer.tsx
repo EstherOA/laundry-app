@@ -74,7 +74,7 @@ const ViewCustomer = () => {
             cursor="pointer"
           />
           <Text fontSize="28px" fontWeight="semibold" mb="32px">
-            Customer {customerDetails._id}
+            Customer #{customerDetails.customerId}
           </Text>
         </Flex>
         <Box>

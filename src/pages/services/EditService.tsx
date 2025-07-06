@@ -88,7 +88,7 @@ const EditService = () => {
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Service #{serviceDetails._id}</Text>
+        <Text textStyle="h1">Edit Service #{serviceDetails.serviceId}</Text>
       </Flex>
       <Formik
         initialValues={serviceDetails as ServiceFormValues}

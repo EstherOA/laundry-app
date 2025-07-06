@@ -96,7 +96,7 @@ const EditStaff = () => {
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Employee #20</Text>
+        <Text textStyle="h1">Edit Employee #{staffDetails.staffId}</Text>
       </Flex>
       <Formik
         initialValues={{

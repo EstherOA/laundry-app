@@ -20,8 +20,7 @@ import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import inventory from "../../api/inventory";
 import { FileUpload } from "../../components";
-import staff from "../../api/staff";
-import { useEffect, useState } from "react";
+import { useStaff } from "../../hooks";
 import { InventoryFormValues, Staff } from "../../utils/types";
 import { format } from "date-fns";
 
@@ -42,8 +41,7 @@ const CreateInventory = () => {
 
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
-
-  const [staffList, setStaffList] = useState<Staff[]>([]);
+  const { data: staffList = [] } = useStaff();
 
   const initialValues: InventoryFormValues = {
     itemName: "",
@@ -56,12 +54,13 @@ const CreateInventory = () => {
     status: "in-stock",
     datePurchased: format(new Date(), "yyyy-MM-dd"),
     vendor: "",
-    itemId: Date.now().toString(),
   };
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const found = staffList.find((sf) => sf._id === values.purchasedBy);
+      const found = staffList.find(
+        (sf: Staff) => sf._id === values.purchasedBy
+      );
       const foundName = found ? `${found.firstName} ${found.lastName}` : "";
 
       const payload = {
@@ -72,7 +71,6 @@ const CreateInventory = () => {
         },
       };
       const res = await inventory.addItem(token!, payload);
-      console.log("added item:", res);
 
       actions.setSubmitting(false);
       toast({
@@ -93,18 +91,6 @@ const CreateInventory = () => {
       console.error("error adding inventory item:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const allStaff = await staff.getStaff(token!);
-        setStaffList(allStaff);
-      } catch (error) {
-        console.error("error fetching staff:", error);
-      }
-    };
-    fetchStaff();
-  }, [token]);
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px={7} pt={5} pb={7}>
@@ -206,7 +192,7 @@ const CreateInventory = () => {
                       fontSize="14px"
                       placeholder="Select buyer"
                     >
-                      {staffList.map((staff) => (
+                      {staffList.map((staff: Staff) => (
                         <option
                           value={staff._id}
                           key={staff._id}
