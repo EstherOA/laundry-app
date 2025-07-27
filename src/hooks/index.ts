@@ -1,4 +1,4 @@
-export { useLogin, useToken, useUser } from "./useSession";
+export { useLogin, useToken, useUser, useUpdatePassword } from "./useSession";
 export {
   useStaff,
   useStaffById,
@@ -36,3 +36,4 @@ export {
   useEditService,
   useDeleteService,
 } from "./useServices";
+export { useAddLog, useLogById, useLogs } from "./useLogs";

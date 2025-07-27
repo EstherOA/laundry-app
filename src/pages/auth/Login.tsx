@@ -23,7 +23,6 @@ import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogin, useUser } from "../../hooks";
 import { APP_NAME } from "../../utils/constants";
-import { useSendOtp } from "../../hooks/useSendOtp";
 
 interface LoginFormValues {
   phoneNumber: string;
@@ -46,7 +45,6 @@ const Login = () => {
   const loginMutation = useLogin();
   const [showPassword, setShowPassword] = useState(false);
   const user = useUser();
-  const { sendOtp, loading: otpLoading } = useSendOtp();
 
   useEffect(() => {
     if (user) {
@@ -90,6 +88,22 @@ const Login = () => {
       });
     }
   };
+
+  // const handleSendOtp = (phoneNumber: string) => {
+  //   if (!phoneNumber.length) {
+  //     toast({
+  //       description: "Phone number is required!",
+  //       position: "top-right",
+  //       duration: 2500,
+  //       status: "error",
+  //       isClosable: true,
+  //     });
+  //   }
+  //   const formattedNumber = phoneNumber.startsWith("0")
+  //     ? "+233" + phoneNumber.slice(1)
+  //     : phoneNumber;
+  //   sendOtp(formattedNumber);
+  // };
 
   return (
     <Box minH="100vh">
@@ -185,8 +199,8 @@ const Login = () => {
                       color="#118524"
                       fontSize="small"
                       textDecoration="underline"
-                      isLoading={otpLoading}
-                      onClick={() => sendOtp(values.phoneNumber)}
+                      // isLoading={otpLoading}
+                      // onClick={() => handleSendOtp(values.phoneNumber)}
                     >
                       Send OTP
                     </Button>

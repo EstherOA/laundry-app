@@ -128,7 +128,7 @@ export const useWeeklyOrderSummary = () => {
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + i);
     return {
-      date: format(date, "do MMM yy"),
+      date: format(date, "dd/MM/yyyy"),
       complete: 0,
       pending: 0,
       cancelled: 0,

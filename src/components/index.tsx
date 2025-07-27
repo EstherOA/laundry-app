@@ -6,3 +6,4 @@ export { default as Invoice } from "./invoice";
 export { default as PaymentModal } from "./payment";
 export { default as CustomBadge } from "./badge";
 export { default as CustomTable } from "./table";
+export { default as LogEntry } from "./log-entry";

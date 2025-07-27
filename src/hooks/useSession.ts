@@ -7,6 +7,7 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { BASE_URL } from "../utils/constants";
 import { LoginPayload, LoginResponse } from "../utils/types";
+import staffApi from "../api/staff";
 
 // Local storage key for the JWT token
 const TOKEN_STORAGE_KEY = "userToken";
@@ -117,4 +118,29 @@ export const useUser = () => {
     enabled: !!token,
   });
   return user;
+};
+
+export const useUpdatePassword = () => {
+  const queryClient = useQueryClient();
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      newPassword,
+    }: {
+      userId: string;
+      newPassword: string;
+    }) => {
+      return await staffApi.editStaff(token!, userId, {
+        password: newPassword,
+        hasDefaultPassword: false,
+      });
+    },
+    onSuccess: (_, { userId }) => {
+      // Invalidate and refetch user data
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      queryClient.invalidateQueries({ queryKey: ["staff", userId] });
+    },
+  });
 };

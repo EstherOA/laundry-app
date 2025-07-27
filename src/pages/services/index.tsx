@@ -20,10 +20,13 @@ import { Service } from "../../utils/types";
 import services from "../../api/services";
 import { useQuery } from "@tanstack/react-query";
 import CustomTable from "../../components/table";
+import { useUser } from "../../hooks";
 
 const Services = () => {
   const columnHelper = createColumnHelper<Service>();
   const navigate = useNavigate();
+  const user = useUser();
+  const isAdmin = user.role === "admin";
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
   const [data, setData] = useState<Service[]>([]);
@@ -103,13 +106,15 @@ const Services = () => {
           }
         />
       </Box>
-      <Flex justify="flex-end">
-        <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>
-          <Link to="/services/new" style={{ color: "white" }}>
-            Create New
-          </Link>
-        </Button>
-      </Flex>
+      {isAdmin && (
+        <Flex justify="flex-end">
+          <Button bgColor="#43BE57" _hover={{ bgColor: "#007B23" }}>
+            <Link to="/services/new" style={{ color: "white" }}>
+              Create New
+            </Link>
+          </Button>
+        </Flex>
+      )}
     </Box>
   );
 };

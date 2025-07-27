@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { CustomBadge, PaymentModal, CustomTable } from "../../components";
+import { PaymentModal, CustomTable } from "../../components";
 import {
   Order,
   OrderFormValues,

@@ -22,11 +22,12 @@ import * as Yup from "yup";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { APP_NAME } from "../../utils/constants";
+import { useEditStaff, useUser } from "../../hooks";
 
 interface ResetPasswordFormValues {
   newPassword: string;
   confirmNewPassword: string;
-  otp: string;
+  // otp: string;
 }
 
 const validationSchema = Yup.object({
@@ -36,7 +37,7 @@ const validationSchema = Yup.object({
   confirmNewPassword: Yup.string()
     .oneOf([Yup.ref("newPassword"), ""], "Passwords must match")
     .required("Password is required"),
-  otp: Yup.string().required("OTP is required"),
+  // otp: Yup.string().required("OTP is required"),
 });
 
 const ResetPassword = () => {
@@ -45,23 +46,48 @@ const ResetPassword = () => {
   const {
     state: { phoneNumber },
   } = useLocation();
+  const user = useUser();
+  const { mutateAsync: editUser } = useEditStaff();
+
   const [showPassword, setShowPassword] = useState(false);
 
   const initialValues: ResetPasswordFormValues = {
-    otp: "",
+    // otp: "",
     newPassword: "",
     confirmNewPassword: "",
   };
 
   const handleSubmit = async (values: any, actions: any) => {
-    toast({
-      description: "Password Updated Successfully",
-      position: "top-right",
-      duration: 2500,
-      status: "success",
-      isClosable: true,
-    });
-    navigate("/");
+    try {
+      if (!user) {
+        toast({
+          description: "Login to continue",
+          position: "top-right",
+          duration: 2500,
+          status: "error",
+          isClosable: true,
+        });
+        navigate("/login");
+      }
+      await editUser({
+        id: user._id,
+        data: {
+          ...user,
+          password: values.newPassword,
+          hasDefaultPassword: false,
+        },
+      });
+      toast({
+        description: "Password Updated Successfully",
+        position: "top-right",
+        duration: 2500,
+        status: "success",
+        isClosable: true,
+      });
+      navigate("/");
+    } catch (error) {
+      console.error("Error updating user password");
+    }
     actions.setSubmitting(false);
   };
 
@@ -90,10 +116,10 @@ const ResetPassword = () => {
             <Heading textAlign="center" pb={4}>
               Reset Password
             </Heading>
-            <Flex mb="1.5em" justify="center">
+            {/* <Flex mb="1.5em" justify="center">
               <Text>A code has been sent to&nbsp;</Text>
               <Text fontWeight={600}>{phoneNumber}</Text>
-            </Flex>
+            </Flex> */}
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
@@ -101,7 +127,7 @@ const ResetPassword = () => {
             >
               {({ isSubmitting, errors, touched }) => (
                 <Form>
-                  <Field name="otp">
+                  {/* <Field name="otp">
                     {({ field }: any) => (
                       <FormControl
                         isInvalid={!!(errors.otp && touched.otp)}
@@ -118,7 +144,7 @@ const ResetPassword = () => {
                         <FormErrorMessage>{errors.otp}</FormErrorMessage>
                       </FormControl>
                     )}
-                  </Field>
+                  </Field> */}
                   <Field name="newPassword">
                     {({ field }: any) => (
                       <FormControl

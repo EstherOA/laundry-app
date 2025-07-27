@@ -151,6 +151,16 @@ export interface Inventory {
   createdAt: string;
   updatedAt: string;
 }
+export interface Log {
+  _id: string;
+  resourceId: string;
+  message: string;
+  type: LogType;
+  staffId: string;
+  createdAt: string;
+}
+
+export type LogType = "access" | "create" | "update" | "delete";
 
 export type CustomerFormValues = Omit<
   Customer,

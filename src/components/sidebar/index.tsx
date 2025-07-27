@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import DashboardSvg from "../../assets/dashboard.svg";
@@ -12,61 +12,71 @@ import OrderIcon from "../../assets/order_icon.svg";
 import InventoryIcon from "../../assets/inventory_icon.svg";
 import CustomerIcon from "../../assets/customer_icon.svg";
 import ReportIcon from "../../assets/report_icon.svg";
-
-const sideItems = [
-  {
-    title: "Dashboard",
-    href: "/",
-    svg: DashboardSvg,
-    icon: DashboardIcon,
-  },
-  {
-    title: "Orders",
-    href: "/orders",
-    svg: OrderSvg,
-    icon: OrderIcon,
-  },
-  {
-    title: "Services",
-    href: "/services",
-    svg: ServiceSvg,
-    icon: ServiceIcon,
-  },
-  {
-    title: "Customers",
-    href: "/customers",
-    svg: CustomerSvg,
-    icon: CustomerIcon,
-  },
-  {
-    title: "Inventory",
-    href: "/inventory",
-    svg: OrderSvg,
-    icon: InventoryIcon,
-  },
-  {
-    title: "Staff",
-    href: "/staff",
-    svg: CustomerSvg,
-    icon: StaffIcon,
-  },
-  {
-    title: "Reports",
-    href: "/reports",
-    svg: DashboardSvg,
-    icon: ReportIcon,
-  },
-];
+import { useUser } from "../../hooks";
 
 const Sidebar = () => {
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const navigate = useNavigate();
+  const user = useUser();
+  const isAdmin = user.role === "admin";
+
+  const sideItems = useMemo(
+    () => [
+      {
+        title: "Dashboard",
+        href: "/",
+        svg: DashboardSvg,
+        icon: DashboardIcon,
+      },
+      {
+        title: "Orders",
+        href: "/orders",
+        svg: OrderSvg,
+        icon: OrderIcon,
+      },
+      {
+        title: "Services",
+        href: "/services",
+        svg: ServiceSvg,
+        icon: ServiceIcon,
+      },
+      {
+        title: "Customers",
+        href: "/customers",
+        svg: CustomerSvg,
+        icon: CustomerIcon,
+      },
+      {
+        title: "Inventory",
+        href: "/inventory",
+        svg: OrderSvg,
+        icon: InventoryIcon,
+      },
+      ...(isAdmin
+        ? [
+            {
+              title: "Staff",
+              href: "/staff",
+              svg: CustomerSvg,
+              icon: StaffIcon,
+            },
+          ]
+        : []),
+      {
+        title: "Reports",
+        href: "/reports",
+        svg: DashboardSvg,
+        icon: ReportIcon,
+      },
+    ],
+    [isAdmin]
+  );
 
   const getPageIllustration = useCallback(() => {
     return (
       sideItems.find((item) => item.title === currentPage)?.svg ?? DashboardSvg
     );
-  }, [currentPage]);
+  }, [currentPage, sideItems]);
 
   const handleClick = (title: string, to: string) => {
     setCurrentPage(title);

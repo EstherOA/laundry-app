@@ -59,7 +59,7 @@ const EditProfile = () => {
         status: "success",
         isClosable: true,
       });
-      navigate("/staff");
+      navigate(-1);
     } catch (error) {
       toast({
         description: "Failed to edit profile",
@@ -89,11 +89,11 @@ const EditProfile = () => {
           left="150px"
           variant="ghost"
           onClick={() => {
-            navigate("/staff");
+            navigate("/profile");
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Employee #{profile.staffId}</Text>
+        <Text textStyle="h1">Edit Profile</Text>
       </Flex>
       <Formik
         initialValues={{
@@ -262,12 +262,7 @@ const EditProfile = () => {
                 )}
               </Field>
             </SimpleGrid>
-            <Text>Files</Text>
-            <Box>
-              <Flex>
-                <Text>file.title</Text>
-                <IconButton aria-label="delete" />
-              </Flex>
+            {/* <Box>
               <Field name="file">
                 {({ field }: any) => (
                   <FormControl>
@@ -287,7 +282,7 @@ const EditProfile = () => {
                   </FormControl>
                 )}
               </Field>
-            </Box>
+            </Box> */}
             <Flex justifyContent="flex-end" mt={10}>
               <Button
                 bgColor="#43BE57"

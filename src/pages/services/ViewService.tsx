@@ -17,13 +17,15 @@ import {
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import { useDeleteService } from "../../hooks";
+import { useDeleteService, useUser } from "../../hooks";
 
 const ViewService = () => {
   const {
     state: { serviceDetails },
   } = useLocation();
   const navigate = useNavigate();
+  const user = useUser();
+  const isAdmin = user.role === "admin";
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const toast = useToast();
@@ -117,31 +119,33 @@ const ViewService = () => {
             </Flex>
           </SimpleGrid>
         </Box>
-        <Flex justifyContent="flex-end" gap={4}>
-          <Button
-            bgColor="#43BE57"
-            _hover={{ bgColor: "#007B23" }}
-            color="white"
-            onClick={() =>
-              navigate(`/services/${serviceDetails._id}/edit`, {
-                state: {
-                  serviceDetails,
-                },
-              })
-            }
-          >
-            Edit
-          </Button>
-          <Button
-            bgColor="#FF0000"
-            _hover={{ bgColor: "#8C0000" }}
-            color="white"
-            onClick={onOpen}
-            isLoading={deleteServiceMutation.isPending}
-          >
-            Delete
-          </Button>
-        </Flex>
+        {isAdmin && (
+          <Flex justifyContent="flex-end" gap={4}>
+            <Button
+              bgColor="#43BE57"
+              _hover={{ bgColor: "#007B23" }}
+              color="white"
+              onClick={() =>
+                navigate(`/services/${serviceDetails._id}/edit`, {
+                  state: {
+                    serviceDetails,
+                  },
+                })
+              }
+            >
+              Edit
+            </Button>
+            <Button
+              bgColor="#FF0000"
+              _hover={{ bgColor: "#8C0000" }}
+              color="white"
+              onClick={onOpen}
+              isLoading={deleteServiceMutation.isPending}
+            >
+              Delete
+            </Button>
+          </Flex>
+        )}
       </Box>
 
       <AlertDialog

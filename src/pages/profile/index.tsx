@@ -13,13 +13,16 @@ import {
 } from "@chakra-ui/react";
 import { format } from "date-fns";
 import EditProfile from "./EditProfile";
-import { useUser } from "../../hooks";
+import { useLogs, useUser } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { LogEntry } from "../../components";
+import { Log } from "../../utils/types";
 
 const Profile = () => {
   const navigate = useNavigate();
   const user = useUser();
+  const { data: logs = [] } = useLogs();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const navigateToEditProfile = () => {
@@ -174,7 +177,13 @@ const Profile = () => {
                 </Flex>
               </Flex>
             </TabPanel>
-            <TabPanel></TabPanel>
+            <TabPanel h="full">
+              <Flex gap={5} flexDir="column" overflowY="scroll" h="336px">
+                {logs.map((log: Log) => (
+                  <LogEntry key={log._id} log={log as Log} />
+                ))}
+              </Flex>
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Grid>

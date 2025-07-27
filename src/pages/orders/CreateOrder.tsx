@@ -13,7 +13,7 @@ import {
   FormControl,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import { addDays, format } from "date-fns";
@@ -24,6 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { OrderFormValues, OrderItem, Service, Staff } from "../../utils/types";
 import orders from "../../api/orders";
 import { useUser } from "../../hooks";
+import CustomerModal from "./CustomerModal";
 
 const orderItemSchema = Yup.object({
   itemName: Yup.string().required("Item Name is required"),
@@ -265,11 +266,23 @@ const OrderItemEntry = ({
   );
 };
 
+// Helper to map customer object to form fields
+const mapCustomerToFormFields = (customer: any) => ({
+  customerFirstName: customer.firstName || "",
+  customerLastName: customer.lastName || "",
+  customerPhoneNumber: customer.phoneNumber || "",
+  address: customer.address || "",
+  landmark: customer.landmark || "",
+  deliveryNotes: customer.deliveryNotes || "",
+});
+
 const CreateOrder = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
   const user = useUser();
+  const [isCustomerModalOpen, setCustomerModalOpen] = useState(false);
+  const formikRef = useRef<any>(null);
 
   const initialValues: OrderFormValues = {
     totalAmount: 0,
@@ -471,8 +484,9 @@ const CreateOrder = () => {
         initialValues={initialValues}
         validationSchema={orderMainSchema}
         onSubmit={handleSubmit}
+        innerRef={formikRef}
       >
-        {({ isSubmitting, errors, touched }) => (
+        {({ isSubmitting, errors, touched, setFieldValue }) => (
           <Form>
             <Box>
               <SimpleGrid columns={4} gap={10}>
@@ -543,9 +557,33 @@ const CreateOrder = () => {
               </SimpleGrid>
             </Box>
             <Box>
-              <Text textAlign="center" textStyle="h2" mt="56px" mb="32px">
-                Customer Details
-              </Text>
+              <Flex justify="center" alignItems="center" mt="56px" mb="32px">
+                <Text textAlign="center" textStyle="h2" mr={2}>
+                  Customer Details
+                </Text>
+                <Button
+                  py={2}
+                  px={2}
+                  variant="outline"
+                  _hover="#255DEF"
+                  color="white"
+                  backgroundColor="darkcyan"
+                  onClick={() => setCustomerModalOpen(true)}
+                >
+                  Import Customer
+                </Button>
+              </Flex>
+              <CustomerModal
+                isOpen={isCustomerModalOpen}
+                onClose={() => setCustomerModalOpen(false)}
+                onImport={(customer) => {
+                  setCustomerModalOpen(false);
+                  const fields = mapCustomerToFormFields(customer);
+                  Object.entries(fields).forEach(([key, value]) => {
+                    setFieldValue(key, value);
+                  });
+                }}
+              />
               <SimpleGrid columns={4} gap={10}>
                 <Field name="customerFirstName">
                   {({ field }: any) => (
