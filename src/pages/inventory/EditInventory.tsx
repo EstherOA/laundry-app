@@ -15,13 +15,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import inventory from "../../api/inventory";
 import { FileUpload } from "../../components";
 import { useStaff } from "../../hooks";
-import { InventoryFormValues, Staff } from "../../utils/types";
+import { EditInventoryFormValues, Staff, ItemStatus } from "../../utils/types";
 import { format } from "date-fns";
 
 const validationSchema = Yup.object({
@@ -34,6 +34,7 @@ const validationSchema = Yup.object({
   datePurchased: Yup.string().required("Date Purchased is required"),
   paymentMode: Yup.string().required("Payment Mode is required"),
   paymentReceipt: Yup.string().required("Payment Receipt is required"),
+  status: Yup.string().required("Status is required"),
 });
 
 const EditInventory = () => {
@@ -46,15 +47,19 @@ const EditInventory = () => {
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
   const { data: staffList = [] } = useStaff();
 
-  const initialValues: InventoryFormValues = {
+  const initialValues: EditInventoryFormValues = {
     ...inventoryDetails,
+    purchasedBy: inventoryDetails.purchasedBy.staffId,
     datePurchased: format(
       new Date(inventoryDetails.datePurchased),
       "yyyy-MM-dd"
     ),
   };
 
-  const handleSubmit = async (values: any, actions: any) => {
+  const handleSubmit = async (
+    values: EditInventoryFormValues,
+    actions: FormikHelpers<EditInventoryFormValues>
+  ) => {
     try {
       const found = staffList.find(
         (sf: Staff) => sf._id === values.purchasedBy
@@ -250,10 +255,35 @@ const EditInventory = () => {
                       fontSize="14px"
                       placeholder="Select payment mode"
                     >
-                      <option value="option1">Momo</option>
-                      <option value="option2">Cash</option>
+                      <option value="momo">Momo</option>
+                      <option value="cash">Cash</option>
                     </Select>
                     <FormErrorMessage>{errors.paymentMode}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+              <Field name="status">
+                {({ field }: any) => (
+                  <FormControl isInvalid={!!(errors.status && touched.status)}>
+                    <FormLabel
+                      htmlFor="status"
+                      fontSize="10px"
+                      textStyle="formLabel"
+                    >
+                      Status
+                    </FormLabel>
+                    <Select
+                      h="40px"
+                      {...field}
+                      id="status"
+                      fontSize="14px"
+                      placeholder="Select status"
+                    >
+                      <option value="in-stock">In Stock</option>
+                      <option value="low-stock">Low Stock</option>
+                      <option value="out-of-stock">Out of Stock</option>
+                    </Select>
+                    <FormErrorMessage>{errors.status}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>

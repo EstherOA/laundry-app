@@ -17,7 +17,7 @@ const ViewInvoice = () => {
           w="100%"
           justify="center"
           alignItems="center"
-          mb="20px"
+          mb="10px"
           position="relative"
         >
           <IconButton
@@ -26,16 +26,13 @@ const ViewInvoice = () => {
             w="36px"
             position="absolute"
             h="28px"
-            left="150px"
+            left="50px"
             variant="ghost"
             onClick={() => {
               navigate(-1);
             }}
             cursor="pointer"
           />
-          <Text fontSize="28px" fontWeight="semibold">
-            Invoice #{orderDetails.invoiceId}
-          </Text>
         </Flex>
         <Invoice orderDetails={orderDetails} />
       </Box>

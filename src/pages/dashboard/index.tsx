@@ -8,7 +8,11 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { DemoChart } from "../../components";
+import {
+  RevenueChart,
+  InventoryStatusChart,
+  OrderStatusChart,
+} from "../../components";
 import { useEffect, useState } from "react";
 import { useOrders } from "../../hooks";
 import { Order } from "../../utils/types";
@@ -101,7 +105,7 @@ const Dashboard = () => {
           </SimpleGrid>
         </GridItem>
         <GridItem>
-          <Card>
+          <Card h="100%">
             <CardHeader
               borderTopLeftRadius="0.375rem"
               borderTopRightRadius="0.375rem"
@@ -115,27 +119,27 @@ const Dashboard = () => {
               Order Trend
             </CardHeader>
             <CardBody>
-              <DemoChart />
+              <OrderStatusChart />
             </CardBody>
           </Card>
         </GridItem>
         <GridItem>
-          <Card bgColor="#FF6A54">
+          <Card h="100%" bgColor="#FF6A54">
             <CardHeader color="white" fontWeight={600}>
               Inventory Tracking
             </CardHeader>
             <CardBody>
-              <DemoChart />
+              <InventoryStatusChart />
             </CardBody>
           </Card>
         </GridItem>
         <GridItem>
-          <Card bgColor="#FF6A54">
+          <Card h="100%" bgColor="#FF6A54">
             <CardHeader color="white" fontWeight={600}>
-              Activity Summary
+              Revenue Insights
             </CardHeader>
             <CardBody>
-              <DemoChart />
+              <RevenueChart />
             </CardBody>
           </Card>
         </GridItem>

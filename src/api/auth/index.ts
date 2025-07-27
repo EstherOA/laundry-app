@@ -21,4 +21,6 @@ export default {
     });
     return response.data;
   },
+
+  async verifyOtp(phoneNumber: string, jwt: string) {},
 };

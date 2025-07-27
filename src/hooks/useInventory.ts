@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import inventoryApi from "../api/inventory";
-import { InventoryFormValues } from "../utils/types";
+import { InventoryFormValues, Inventory } from "../utils/types";
 
 // Query hook to get all inventory items
 export const useInventory = () => {
@@ -69,4 +69,18 @@ export const useDeleteInventoryItem = () => {
       queryClient.removeQueries({ queryKey: ["inventory", id] });
     },
   });
+};
+
+// Hook to get a summary of inventory items and their statuses
+export const useInventorySummary = () => {
+  const { data: inventory, isLoading, error } = useInventory();
+
+  const summary =
+    inventory?.map((item: Inventory) => ({
+      item: item.itemName,
+      status: item.status,
+      quantity: item.quantity,
+    })) || [];
+
+  return { summary, isLoading, error };
 };

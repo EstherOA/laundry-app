@@ -25,6 +25,7 @@ const ViewStaff = () => {
   const {
     state: { staffDetails },
   } = useLocation();
+
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -93,9 +94,18 @@ const ViewStaff = () => {
               <Text textStyle="infoTitle" mr={1}>
                 Initial Password
               </Text>
-              <Icon as={RepeatIcon} />
             </Flex>
-            <Text>30</Text>
+            <Text>
+              {staffDetails.hasDefaultPassword ? staffDetails.password : "N/A"}
+            </Text>
+          </Flex>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">Address</Text>
+            <Text>{staffDetails.address}</Text>
+          </Flex>
+          <Flex flexDir="column" gap={1}>
+            <Text textStyle="infoTitle">ID Number</Text>
+            <Text>{staffDetails.idNumber}</Text>
           </Flex>
           <Flex flexDir="column" gap={1}>
             <Text textStyle="infoTitle">Role</Text>

@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ordersApi from "../api/orders";
 import { OrderFormValues, PaymentFormValues } from "../utils/types";
+import { Payment } from "../utils/types";
+import {
+  startOfWeek,
+  endOfWeek,
+  format,
+  isWithinInterval,
+  parseISO,
+} from "date-fns";
 
 // Query hook to get all orders
 export const useOrders = () => {
@@ -85,4 +93,99 @@ export const useAddPayment = () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
   });
+};
+
+// Mutation hook to update order payment status
+export const useUpdateOrderPaymentStatus = () => {
+  const queryClient = useQueryClient();
+  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      paymentStatus,
+    }: {
+      id: string;
+      paymentStatus: string;
+    }) => ordersApi.editOrder(token!, id, { paymentStatus }),
+    onSuccess: (_, { id }) => {
+      // Invalidate and refetch the specific order and orders list
+      queryClient.invalidateQueries({ queryKey: ["orders", id] });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
+// Hook to generate a summary of orders processed for the current week
+export const useWeeklyOrderSummary = () => {
+  const { data: orders, isLoading, error } = useOrders();
+  const today = new Date();
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
+  const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+
+  // Prepare a map for each day of the week
+  const days = Array.from({ length: 7 }).map((_, i) => {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + i);
+    return {
+      date: format(date, "do MMM yy"),
+      complete: 0,
+      pending: 0,
+      cancelled: 0,
+    };
+  });
+
+  if (orders && Array.isArray(orders)) {
+    orders.forEach((order) => {
+      // Use orderDate if available, otherwise fallback to createdAt
+      const orderDateStr = order.orderDate || order.createdAt;
+      const orderDate = parseISO(orderDateStr);
+      if (isWithinInterval(orderDate, { start: weekStart, end: weekEnd })) {
+        const dayIdx = orderDate.getDay() === 0 ? 6 : orderDate.getDay() - 1; // Monday=0, Sunday=6
+        if (order.orderStatus === "complete") days[dayIdx].complete++;
+        else if (order.orderStatus === "pending") days[dayIdx].pending++;
+        else if (order.orderStatus === "cancelled") days[dayIdx].cancelled++;
+      }
+    });
+  }
+
+  return { summary: days, isLoading, error };
+};
+
+// Hook to get revenue summary from all payments per order each month
+export const useMonthlyRevenueSummary = (dashboard: boolean = false) => {
+  const { data: orders, isLoading, error } = useOrders();
+  const payments: { amount: number; createdAt: string }[] = [];
+
+  if (orders && Array.isArray(orders)) {
+    orders.forEach((order) => {
+      if (Array.isArray(order.payments)) {
+        order.payments.forEach((payment: Payment) => {
+          payments.push({
+            amount: payment.amount,
+            createdAt: payment.createdAt,
+          });
+        });
+      }
+    });
+  }
+
+  // Group payments by month
+  const revenueMap: Record<string, number> = {};
+  payments.forEach(({ amount, createdAt }) => {
+    const date = parseISO(createdAt);
+    const month = format(date, "MMM yyyy");
+    if (!revenueMap[month]) revenueMap[month] = 0;
+    revenueMap[month] += amount;
+  });
+
+  let summary = Object.entries(revenueMap)
+    .map(([month, totalRevenue]) => ({ month, totalRevenue }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+
+  if (dashboard) {
+    summary = summary.slice(-6);
+  }
+
+  return { summary, isLoading, error };
 };

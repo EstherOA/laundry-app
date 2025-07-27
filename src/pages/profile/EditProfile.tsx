@@ -1,4 +1,3 @@
-import { ArrowBackIcon, RepeatIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -14,14 +13,15 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { ArrowBackIcon, RepeatIcon } from "@chakra-ui/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useQuery } from "@tanstack/react-query";
 import staff from "../../api/staff";
-import { FileUpload } from "../../components";
 import { StaffFormValues } from "../../utils/types";
-import { generateDefaultPassword } from "../../utils";
+import { format } from "date-fns";
+import { FileUpload } from "../../components";
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
@@ -29,48 +29,31 @@ const validationSchema = Yup.object({
   phoneNumber: Yup.string()
     .min(10, "Invalid phone number")
     .required("Phone number is required"),
-  password: Yup.string()
-    .min(6, "Password should be at least 6 characters")
-    .required("Password is required"),
   address: Yup.string().required("Address is required"),
-  role: Yup.string().required("Role is required"),
   dateCommenced: Yup.date().required("Date commenced is required"),
   ssnit: Yup.string().required("SSNIT is required"),
   tin: Yup.string().required("TIN is required"),
-  salary: Yup.number().required("Salary is required"),
   shift: Yup.string().required("Shift is required"),
 });
 
-const CreateStaff = () => {
+const EditProfile = () => {
+  const {
+    state: { profile },
+  } = useLocation();
   const navigate = useNavigate();
-
   const toast = useToast();
   const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
 
-  const initialValues: StaffFormValues = {
-    firstName: "",
-    lastName: "",
-    address: "",
-    password: "",
-    phoneNumber: "",
-    idNumber: "",
-    role: "employee",
-    ssnit: "",
-    tin: "",
-    shift: "",
-    hasDefaultPassword: true,
-    salary: 0,
-    dateCommenced: new Date().toLocaleDateString(),
-    contract: "",
-  };
-
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const res = await staff.addStaff(token!, values);
+      const res = await staff.editStaff(token!, profile._id, {
+        ...values,
+        password: profile.hasDefaultPassword ? values.password : undefined,
+      });
 
       actions.setSubmitting(false);
       toast({
-        description: "Employee added successfully",
+        description: "Profile edited successfully",
         position: "top-right",
         duration: 2500,
         status: "success",
@@ -79,12 +62,12 @@ const CreateStaff = () => {
       navigate("/staff");
     } catch (error) {
       toast({
-        description: "Failed to add employee",
+        description: "Failed to edit profile",
         duration: 2500,
         isClosable: true,
         status: "error",
       });
-      console.error("error adding employee:", error);
+      console.error("error editing profile:", error);
     }
   };
 
@@ -110,10 +93,14 @@ const CreateStaff = () => {
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Add New Employee</Text>
+        <Text textStyle="h1">Edit Employee #{profile.staffId}</Text>
       </Flex>
       <Formik
-        initialValues={initialValues}
+        initialValues={{
+          ...(profile as StaffFormValues),
+          password: profile.hasDefaultPassword ? profile.password : "N/A",
+          dateCommenced: format(new Date(profile.dateCommenced), "yyyy-MM-dd"),
+        }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -159,47 +146,17 @@ const CreateStaff = () => {
                   <FormControl
                     isInvalid={!!(errors.phoneNumber && touched.phoneNumber)}
                   >
-                    <FormLabel
-                      htmlFor="phoneNumber"
-                      fontSize="10px"
-                      textStyle="formLabel"
-                    >
-                      Phone Number
-                    </FormLabel>
-                    <Input {...field} id="phoneNumber" />
-                    <FormErrorMessage>{errors.phoneNumber}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="password">
-                {({ field }: any) => (
-                  <FormControl
-                    isInvalid={!!(errors.password && touched.password)}
-                  >
                     <Flex>
                       <FormLabel
-                        htmlFor="password"
+                        htmlFor="phoneNumber"
                         fontSize="10px"
                         textStyle="formLabel"
                       >
-                        Password
+                        Phone Number
                       </FormLabel>
-                      <IconButton
-                        onClick={() =>
-                          setFieldValue("password", generateDefaultPassword())
-                        }
-                        mb={2}
-                        size="24px"
-                        variant="ghost"
-                        aria-label="reset password"
-                      >
-                        <RepeatIcon />
-                      </IconButton>{" "}
                     </Flex>
-                    <Input {...field} id="password" />
-                    <FormErrorMessage>
-                      {errors.password as string}
-                    </FormErrorMessage>
+                    <Input {...field} id="phoneNumber" />
+                    <FormErrorMessage>{errors.phoneNumber}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
@@ -234,30 +191,6 @@ const CreateStaff = () => {
                     </FormLabel>
                     <Input {...field} id="idNumber" />
                     <FormErrorMessage>{errors.idNumber}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="role">
-                {({ field }: any) => (
-                  <FormControl isInvalid={!!(errors.role && touched.role)}>
-                    <FormLabel
-                      htmlFor="role"
-                      fontSize="10px"
-                      textStyle="formLabel"
-                    >
-                      Role
-                    </FormLabel>
-                    <Select
-                      h="40px"
-                      {...field}
-                      id="role"
-                      fontSize="14px"
-                      placeholder="Select role"
-                    >
-                      <option value="admin">Admin</option>
-                      <option value="employee">Employee</option>
-                    </Select>
-                    <FormErrorMessage>{errors.role}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
@@ -309,21 +242,6 @@ const CreateStaff = () => {
                   </FormControl>
                 )}
               </Field>
-              <Field name="salary">
-                {({ field }: any) => (
-                  <FormControl isInvalid={!!(errors.salary && touched.salary)}>
-                    <FormLabel
-                      htmlFor="salary"
-                      fontSize="10px"
-                      textStyle="formLabel"
-                    >
-                      Salary
-                    </FormLabel>
-                    <Input {...field} id="salary" />
-                    <FormErrorMessage>{errors.salary}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
               <Field name="shift">
                 {({ field }: any) => (
                   <FormControl isInvalid={!!(errors.shift && touched.shift)}>
@@ -332,7 +250,7 @@ const CreateStaff = () => {
                       fontSize="10px"
                       textStyle="formLabel"
                     >
-                      Shift
+                      Shift Time
                     </FormLabel>
                     <Textarea
                       {...field}
@@ -343,26 +261,33 @@ const CreateStaff = () => {
                   </FormControl>
                 )}
               </Field>
-              <Field name="contract">
+            </SimpleGrid>
+            <Text>Files</Text>
+            <Box>
+              <Flex>
+                <Text>file.title</Text>
+                <IconButton aria-label="delete" />
+              </Flex>
+              <Field name="file">
                 {({ field }: any) => (
                   <FormControl>
                     <FormLabel
-                      htmlFor="contract"
+                      htmlFor="file"
                       fontSize="10px"
                       textStyle="formLabel"
                     >
-                      Contract
+                      Upload Files
                     </FormLabel>
                     <FileUpload
                       {...field}
-                      id="contract"
+                      id="file"
                       type="file"
-                      multiple={false}
+                      multiple={true}
                     />
                   </FormControl>
                 )}
               </Field>
-            </SimpleGrid>
+            </Box>
             <Flex justifyContent="flex-end" mt={10}>
               <Button
                 bgColor="#43BE57"
@@ -381,4 +306,4 @@ const CreateStaff = () => {
   );
 };
 
-export default CreateStaff;
+export default EditProfile;

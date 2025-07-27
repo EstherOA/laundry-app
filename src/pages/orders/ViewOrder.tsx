@@ -37,7 +37,7 @@ const ViewOrder = () => {
   const paymentColumns = [
     columnHelper.accessor("paymentId", {
       id: "id",
-      cell: (info) => info.getValue(),
+      cell: (info) => `#${info.getValue()}`,
       header: "Payment ID",
     }),
     columnHelper.accessor("mode", {
@@ -47,7 +47,7 @@ const ViewOrder = () => {
     }),
     columnHelper.accessor("amount", {
       id: "amount",
-      cell: (info) => info.getValue(),
+      cell: (info) => `GH₵${info.getValue()}`,
       header: "Amount",
     }),
     columnHelper.accessor("sender", {
@@ -126,7 +126,11 @@ const ViewOrder = () => {
             <Text fontSize="28px" fontWeight="semibold">
               Order #{orderDetails.orderId}
             </Text>
-            <CustomBadge title="pending" withDot badgeStyle={{ ml: 4 }} />
+            <CustomBadge
+              title={orderDetails.orderStatus.replace("-", " ")}
+              withDot
+              badgeStyle={{ ml: 4 }}
+            />
           </Flex>
           <Text
             textAlign="center"
@@ -152,7 +156,7 @@ const ViewOrder = () => {
               </Flex>
               <Flex flexDir="column" gap={1}>
                 <Text textStyle="infoTitle">Price</Text>
-                <Text>GH₵ {item.price}</Text>
+                <Text>GH₵{item.price}</Text>
               </Flex>
             </SimpleGrid>
           ))}

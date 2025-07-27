@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -20,9 +20,10 @@ import CustomerSvg from "../../assets/customer.svg";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { useLogin } from "../../hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
+import { useLogin, useUser } from "../../hooks";
+import { APP_NAME } from "../../utils/constants";
+import { useSendOtp } from "../../hooks/useSendOtp";
 
 interface LoginFormValues {
   phoneNumber: string;
@@ -43,8 +44,23 @@ const Login = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const loginMutation = useLogin();
-  const queryClient = useQueryClient();
   const [showPassword, setShowPassword] = useState(false);
+  const user = useUser();
+  const { sendOtp, loading: otpLoading } = useSendOtp();
+
+  useEffect(() => {
+    if (user) {
+      if (user.hasDefaultPassword) {
+        navigate("/reset-password", {
+          state: {
+            phoneNumber: user.phoneNumber,
+          },
+        });
+      } else {
+        navigate("/");
+      }
+    }
+  }, [user, navigate]);
 
   const initialValues: LoginFormValues = {
     phoneNumber: "",
@@ -54,9 +70,7 @@ const Login = () => {
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const token = await loginMutation.mutateAsync(values);
-      queryClient.setQueryData(["userToken"], token);
-
+      await loginMutation.mutateAsync(values);
       actions.setSubmitting(false);
       toast({
         description: "Login Successful",
@@ -65,7 +79,7 @@ const Login = () => {
         status: "success",
         isClosable: true,
       });
-      navigate("/");
+      // Navigation will be handled by useEffect when user is updated
     } catch (error) {
       toast({
         description: "Login Failed",
@@ -89,7 +103,7 @@ const Login = () => {
           alignItems="center"
           gap="2.5em"
         >
-          <Text>Laundry Logo</Text>
+          <Text>{APP_NAME}</Text>
           <Text textStyle="h1" fontWeight={500}>
             Laundry Management System
           </Text>
@@ -107,7 +121,7 @@ const Login = () => {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting, errors, touched }) => (
+              {({ isSubmitting, errors, touched, values }) => (
                 <Form>
                   <Field name="phoneNumber">
                     {({ field }: any) => (
@@ -171,6 +185,8 @@ const Login = () => {
                       color="#118524"
                       fontSize="small"
                       textDecoration="underline"
+                      isLoading={otpLoading}
+                      onClick={() => sendOtp(values.phoneNumber)}
                     >
                       Send OTP
                     </Button>
@@ -186,7 +202,7 @@ const Login = () => {
                       </FormControl>
                     )}
                   </Field>
-                  <Flex>
+                  <Flex align="center">
                     <Button
                       type="submit"
                       color="white"
@@ -197,6 +213,11 @@ const Login = () => {
                     >
                       Login
                     </Button>
+                    <Link to="/send-otp" style={{ textDecoration: "none" }}>
+                      <Text color="#118524" fontSize="14px" ml="1em">
+                        Forgot Password?
+                      </Text>
+                    </Link>
                   </Flex>
                 </Form>
               )}

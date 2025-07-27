@@ -4,7 +4,6 @@ import {
   Flex,
   Grid,
   Image,
-  SimpleGrid,
   Tab,
   TabList,
   TabPanel,
@@ -12,14 +11,41 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
+import EditProfile from "./EditProfile";
 import { useUser } from "../../hooks";
+import { useNavigate } from "react-router-dom";
+import React from "react";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const user = useUser();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const navigateToEditProfile = () => {
+    navigate("/profile/edit", {
+      state: {
+        profile: user,
+      },
+    });
+  };
+
+  const handleChangePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Placeholder: handle file upload logic here
+    const file = event.target.files?.[0];
+    if (file) {
+      // TODO: upload file
+      console.log("Selected file:", file);
+    }
+  };
 
   return (
     <Box mx="32px" mt="48px" boxShadow="md" px="5em" py={7}>
-      <Grid templateColumns="1fr 2fr" templateRows="repeat(2, 1fr)" gap={10}>
+      <Grid templateColumns="1fr 2fr" gap={10}>
         <Flex position="relative" width="280px" height="225px">
           <Flex w="100%" height="100%">
             <Image maxW="100%" w="100%" border="none" />
@@ -35,11 +61,19 @@ const Profile = () => {
             h="52px"
             textTransform="uppercase"
             fontSize="12px"
+            onClick={handleChangePhotoClick}
           >
             Change Photo
           </Button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
         </Flex>
-        <Flex flexDir="column" justify="space-between">
+        <Flex flexDir="column" gap={5}>
           <Box>
             <Flex justify="space-between">
               <Text textStyle="h2">{`${user.firstName} ${user.lastName}`}</Text>
@@ -51,7 +85,7 @@ const Profile = () => {
                 borderColor="#1A7DDB"
                 color="#1A7DDB"
                 backgroundColor="#ECF4FA"
-                disabled
+                onClick={navigateToEditProfile}
                 h="28px"
               >
                 Edit profile
@@ -66,10 +100,6 @@ const Profile = () => {
             <Flex>
               <Text fontWeight="600">201</Text>
               <Text>&nbsp;processed orders</Text>
-            </Flex>
-            <Flex>
-              <Text fontWeight="600">35</Text>
-              <Text>&nbsp;deliveries</Text>
             </Flex>
           </Box>
         </Flex>
@@ -97,7 +127,52 @@ const Profile = () => {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <SimpleGrid></SimpleGrid>
+              <Flex flexDir="column" gap={5}>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    Address
+                  </Box>
+                  <Box width="60%">{user.address}</Box>
+                </Flex>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    Phone Number
+                  </Box>
+                  <Box width="60%">{user.phoneNumber}</Box>
+                </Flex>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    ID Number
+                  </Box>
+                  <Box width="60%">{user.idNumber}</Box>
+                </Flex>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    Date Commenced
+                  </Box>
+                  <Box width="60%">
+                    {format(new Date(user.dateCommenced), "do MMMM yyyy")}
+                  </Box>
+                </Flex>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    SSNIT
+                  </Box>
+                  <Box width="60%">{user.ssnit}</Box>
+                </Flex>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    TIN
+                  </Box>
+                  <Box width="60%">{user.tin}</Box>
+                </Flex>
+                <Flex flexDir="row" justify="space-between">
+                  <Box width="30%" color="#255DEF">
+                    Salary
+                  </Box>
+                  <Box width="60%">{`GH₵${user.salary}`}</Box>
+                </Flex>
+              </Flex>
             </TabPanel>
             <TabPanel></TabPanel>
           </TabPanels>
@@ -108,3 +183,4 @@ const Profile = () => {
 };
 
 export default Profile;
+export { EditProfile };

@@ -2,10 +2,32 @@ import {
   UseMutationResult,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
 import { BASE_URL } from "../utils/constants";
 import { LoginPayload, LoginResponse } from "../utils/types";
+
+// Local storage key for the JWT token
+const TOKEN_STORAGE_KEY = "userToken";
+
+// Helper function to get token from localStorage
+const getStoredToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(TOKEN_STORAGE_KEY);
+};
+
+// Helper function to save token to localStorage
+const saveTokenToStorage = (token: string): void => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(TOKEN_STORAGE_KEY, token);
+};
+
+// Helper function to remove token from localStorage
+const removeTokenFromStorage = (): void => {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(TOKEN_STORAGE_KEY);
+};
 
 const getAuthUser = async (token: string) => {
   const id = (jwtDecode(token) as any).userId;
@@ -19,9 +41,6 @@ const getAuthUser = async (token: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  if (!response.ok) {
-    throw new Error("Login failed");
-  }
 
   return await response.json();
 };
@@ -32,6 +51,7 @@ export const useLogin = (): UseMutationResult<
   LoginPayload,
   unknown
 > => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: LoginPayload) => {
       const url = `${BASE_URL}/auth/login`;
@@ -51,25 +71,50 @@ export const useLogin = (): UseMutationResult<
       const data = await response.json();
       return data.token;
     },
+    onSuccess: (data) => {
+      // Save token to localStorage
+      saveTokenToStorage(data);
+      // Update query cache
+      queryClient.setQueryData(["userToken"], data);
+    },
   });
+};
+
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+
+  return () => {
+    // Remove token from localStorage
+    removeTokenFromStorage();
+    // Clear query cache
+    queryClient.setQueryData(["userToken"], null);
+    queryClient.removeQueries({ queryKey: ["authUser"] });
+  };
 };
 
 export const useToken = () => {
   const { data: token } = useQuery<string | null>({
     queryKey: ["userToken"],
-    enabled: false,
+    queryFn: () => getStoredToken(),
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
   });
 
   return token;
 };
 
 export const useUser = () => {
-  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
+  const { data: token } = useQuery<string | null>({
+    queryKey: ["userToken"],
+    queryFn: () => getStoredToken(),
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
+  });
 
-  if (!token) throw new Error("jwt token not found!");
   const { data: user } = useQuery({
     queryKey: ["authUser"],
-    queryFn: () => getAuthUser(token),
+    queryFn: () => (token ? getAuthUser(token) : null),
+    enabled: !!token,
   });
   return user;
 };

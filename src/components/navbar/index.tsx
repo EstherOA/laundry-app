@@ -9,16 +9,16 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../../hooks";
+import { useLogout } from "../../hooks/useSession";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const user = useUser();
+  const logout = useLogout();
 
   const handleLogout = async () => {
-    queryClient.removeQueries({ queryKey: ["userToken"] });
+    logout();
     navigate("/login");
   };
 

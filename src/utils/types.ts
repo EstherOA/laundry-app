@@ -1,5 +1,3 @@
-export type Shift = "odd" | "even";
-
 export type ServiceType = "washing" | "dry-cleaning" | "ironing";
 
 export type OrderStatus =
@@ -11,8 +9,8 @@ export type OrderStatus =
 
 export type PaymentStatus = "none" | "partial" | "full";
 
-type PaymentMode = "momo" | "cash";
-type ItemStatus = "in-stock" | "low-stock" | "out-of-stock";
+export type PaymentMode = "momo" | "cash";
+export type ItemStatus = "in-stock" | "low-stock" | "out-of-stock";
 
 export interface Staff {
   _id: string;
@@ -24,11 +22,13 @@ export interface Staff {
   contract: string;
   address: string;
   password: string;
+  hasDefaultPassword: boolean;
   phoneNumber: string;
-  shift: Shift;
+  shift: string;
   dateCommenced: string;
   salary: number;
   ssnit: string;
+  idNumber: string;
   tin: string;
   createdAt: string;
   updatedAt: string;
@@ -108,6 +108,7 @@ export interface Payment {
   amount: number;
   receipt: string;
   sender: string;
+  paymentStatus: PaymentStatus;
   senderPhoneNumber: string;
   processedBy: {
     name: string;
@@ -168,6 +169,14 @@ export type InventoryFormValues = Omit<
   purchasedBy: string;
 };
 
+export type EditInventoryFormValues = Omit<
+  Inventory,
+  "_id" | "createdAt" | "updatedAt" | "purchasedBy"
+> & {
+  purchasedBy: string;
+  status: ItemStatus;
+};
+
 export type ServiceFormValues = Omit<
   Service,
   "_id" | "createdAt" | "updatedAt" | "serviceId"
@@ -202,7 +211,7 @@ export type OrderFormValues = Omit<
 
 export type PaymentFormValues = Omit<
   Payment,
-  "paymentId" | "createdAt" | "updatedAt" | "processedBy"
+  "paymentId" | "createdAt" | "updatedAt" | "paymentStatus" | "processedBy"
 > & {
   processedBy: string;
 };

@@ -1,5 +1,5 @@
 import Login from "./Login";
-import ChangePassword from "./ChangePassword";
 import ResetPassword from "./ResetPassword";
+import SendOtp from "./SendOtp";
 
-export { Login, ChangePassword, ResetPassword };
+export { Login, ResetPassword, SendOtp };

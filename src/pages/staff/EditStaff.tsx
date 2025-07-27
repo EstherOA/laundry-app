@@ -11,6 +11,7 @@ import {
   Select,
   SimpleGrid,
   Text,
+  Textarea,
   useToast,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ import staff from "../../api/staff";
 import { FileUpload } from "../../components";
 import { StaffFormValues } from "../../utils/types";
 import { format } from "date-fns";
+import { generateDefaultPassword } from "../../utils";
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
@@ -29,8 +31,13 @@ const validationSchema = Yup.object({
     .min(10, "Invalid phone number")
     .required("Phone number is required"),
   password: Yup.string()
-    .min(6, "Password should be at least 6 characters")
-    .required("Password is required"),
+    .required("Password is required")
+    .test(
+      "password-validation",
+      "Password must be at least 6 characters",
+      (value) => value === "N/A" || value.length >= 6
+    ),
+  idNumber: Yup.string().required("ID Number is required"),
   address: Yup.string().required("Address is required"),
   role: Yup.string().required("Role is required"),
   dateCommenced: Yup.date().required("Date commenced is required"),
@@ -51,12 +58,14 @@ const EditStaff = () => {
 
   const handleSubmit = async (values: any, actions: any) => {
     try {
-      const res = await staff.addStaff(token!, values);
-      console.log("added employee:", res);
+      const res = await staff.editStaff(token!, staffDetails._id, {
+        ...values,
+        password: staffDetails.hasDefaultPassword ? values.password : undefined,
+      });
 
       actions.setSubmitting(false);
       toast({
-        description: "Employee added successfully",
+        description: "Employee edited successfully",
         position: "top-right",
         duration: 2500,
         status: "success",
@@ -65,12 +74,12 @@ const EditStaff = () => {
       navigate("/staff");
     } catch (error) {
       toast({
-        description: "Failed to add employee",
+        description: "Failed to edit employee",
         duration: 2500,
         isClosable: true,
         status: "error",
       });
-      console.error("error adding employee:", error);
+      console.error("error editing employee:", error);
     }
   };
 
@@ -101,6 +110,9 @@ const EditStaff = () => {
       <Formik
         initialValues={{
           ...(staffDetails as StaffFormValues),
+          password: staffDetails.hasDefaultPassword
+            ? staffDetails.password
+            : "N/A",
           dateCommenced: format(
             new Date(staffDetails.dateCommenced),
             "yyyy-MM-dd"
@@ -109,7 +121,7 @@ const EditStaff = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, errors, touched }) => (
+        {({ isSubmitting, errors, touched, setFieldValue }) => (
           <Form>
             <SimpleGrid columns={4} gap={10} mt={10}>
               <Field name="firstName">
@@ -170,18 +182,42 @@ const EditStaff = () => {
                   <FormControl
                     isInvalid={!!(errors.password && touched.password)}
                   >
-                    <Flex>
+                    <Flex align="center">
                       <FormLabel
+                        mr={1}
                         htmlFor="password"
                         fontSize="10px"
                         textStyle="formLabel"
                       >
-                        Password
+                        Initial Password
                       </FormLabel>
-                      <RepeatIcon />
+                      <IconButton
+                        isDisabled={!staffDetails.hasDefaultPassword}
+                        onClick={() =>
+                          setFieldValue("password", generateDefaultPassword())
+                        }
+                        mb={2}
+                        size="24px"
+                        variant="ghost"
+                        aria-label="reset password"
+                      >
+                        <RepeatIcon />
+                      </IconButton>
                     </Flex>
-                    <Input {...field} id="password" />
-                    <FormErrorMessage>{errors.password}</FormErrorMessage>
+                    <Input
+                      {...field}
+                      id="password"
+                      readOnly={!staffDetails.hasDefaultPassword}
+                    />
+                    {typeof errors.password === "string" ? (
+                      <FormErrorMessage>{errors.password}</FormErrorMessage>
+                    ) : Array.isArray(errors.password) ? (
+                      errors.password.map((err, i) => (
+                        <FormErrorMessage key={i}>
+                          {err.toString()}
+                        </FormErrorMessage>
+                      ))
+                    ) : null}
                   </FormControl>
                 )}
               </Field>
@@ -199,6 +235,23 @@ const EditStaff = () => {
                     </FormLabel>
                     <Input {...field} id="address" />
                     <FormErrorMessage>{errors.address}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+              <Field name="idNumber">
+                {({ field }: any) => (
+                  <FormControl
+                    isInvalid={!!(errors.idNumber && touched.idNumber)}
+                  >
+                    <FormLabel
+                      htmlFor="idNumber"
+                      fontSize="10px"
+                      textStyle="formLabel"
+                    >
+                      ID Number
+                    </FormLabel>
+                    <Input {...field} id="idNumber" />
+                    <FormErrorMessage>{errors.idNumber}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
@@ -299,16 +352,11 @@ const EditStaff = () => {
                     >
                       Shift Time
                     </FormLabel>
-                    <Select
-                      h="40px"
+                    <Textarea
                       {...field}
                       id="shift"
-                      fontSize="14px"
-                      placeholder="Select shift"
-                    >
-                      <option value="even">Even Days</option>
-                      <option value="odd">Odd Days</option>
-                    </Select>
+                      placeholder="Enter shift details"
+                    />
                     <FormErrorMessage>{errors.shift}</FormErrorMessage>
                   </FormControl>
                 )}

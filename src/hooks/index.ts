@@ -13,6 +13,7 @@ export {
   useEditOrder,
   useDeleteOrder,
   useAddPayment,
+  useUpdateOrderPaymentStatus,
 } from "./useOrders";
 export {
   useCustomers,

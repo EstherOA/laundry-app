@@ -61,7 +61,7 @@ const Staff = () => {
     }),
     columnHelper.accessor("salary", {
       id: "salary",
-      cell: (info) => info.getValue(),
+      cell: (info) => `GH₵${info.getValue()}`,
       header: "Salary",
     }),
     columnHelper.accessor("createdAt", {
@@ -85,6 +85,7 @@ const Staff = () => {
             name: `${firstName} ${lastName}`,
             firstName,
             lastName,
+            password,
             ...rest,
           })
         );

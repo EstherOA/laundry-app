@@ -14,19 +14,23 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { FileUpload } from "..";
-import { PaymentFormValues, Staff } from "../../utils/types";
-import orders from "../../api/orders";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import staff from "../../api/staff";
+import {
+  useAddPayment,
+  useStaff,
+  useUpdateOrderPaymentStatus,
+} from "../../hooks";
 import { useParams } from "react-router-dom";
+import { PaymentFormValues, Staff } from "../../utils/types";
+import { Order } from "../../utils/types";
+import { log } from "console";
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
+  orderDetails: Order;
 }
 
 const validationSchema = Yup.object({
@@ -37,13 +41,12 @@ const validationSchema = Yup.object({
   processedBy: Yup.string().required("Employee is required"),
 });
 
-const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
+const PaymentModal = ({ isOpen, onClose, orderDetails }: PaymentModalProps) => {
   const toast = useToast();
   const { orderId } = useParams();
-
-  const { data: token } = useQuery<string>({ queryKey: ["userToken"] });
-
-  const [staffList, setStaffList] = useState<Staff[]>([]);
+  const { data: staffList = [] } = useStaff();
+  const addPaymentMutation = useAddPayment();
+  const updateOrderPaymentStatusMutation = useUpdateOrderPaymentStatus();
 
   const initialValues: PaymentFormValues = {
     mode: "cash",
@@ -54,13 +57,16 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
     receipt: "",
   };
 
-  const handleSubmit = async (values: any, actions: any) => {
+  const handleSubmit = async (
+    values: PaymentFormValues,
+    actions: FormikHelpers<PaymentFormValues>
+  ) => {
     try {
       const processedByStaff = staffList.find(
-        (staff) => staff._id === values.processedBy
+        (staff: Staff) => staff._id === values.processedBy
       );
 
-      const res = await orders.addPayment(token!, orderId!, {
+      const paymentData = {
         ...values,
         processedBy: {
           staffId: values.processedBy,
@@ -68,6 +74,27 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
             ? `${processedByStaff.firstName} ${processedByStaff.lastName}`
             : "",
         },
+      };
+
+      const totalPaid = orderDetails.payments.reduce((acc, curr) => {
+        return acc + curr.amount;
+      }, 0);
+
+      const paymentStatus =
+        Number(orderDetails.totalAmount) > values.amount + totalPaid
+          ? "partial"
+          : "full";
+
+      // Add the payment
+      await addPaymentMutation.mutateAsync({
+        id: orderId!,
+        data: paymentData as any, // Type assertion needed due to API mismatch
+      });
+
+      // Update the order's payment status
+      await updateOrderPaymentStatusMutation.mutateAsync({
+        id: orderId!,
+        paymentStatus,
       });
 
       actions.setSubmitting(false);
@@ -89,18 +116,6 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
       console.error("error adding payment:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        const allStaff = await staff.getStaff(token!);
-        setStaffList(allStaff);
-      } catch (error) {
-        console.error("error fetching staff:", error);
-      }
-    };
-    fetchStaff();
-  }, [token]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -153,7 +168,19 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
                       >
                         Amount
                       </FormLabel>
-                      <Input {...field} id="amount" />
+                      <Input
+                        {...field}
+                        id="amount"
+                        type="number"
+                        min={0.01}
+                        step="0.01"
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "" || parseFloat(value) >= 0.01) {
+                            field.onChange(e);
+                          }
+                        }}
+                      />
                       <FormErrorMessage>{errors.amount}</FormErrorMessage>
                     </FormControl>
                   )}
@@ -220,13 +247,13 @@ const PaymentModal = ({ isOpen, onClose }: PaymentModalProps) => {
                         fontSize="14px"
                         placeholder="Select employee"
                       >
-                        {staffList.map((staff) => (
+                        {staffList.map((staff: Staff) => (
                           <option
                             value={staff._id}
+                            key={staff._id}
                           >{`${staff.firstName} ${staff.lastName}`}</option>
                         ))}
                       </Select>
-                      <FormErrorMessage>{errors.processedBy}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>

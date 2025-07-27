@@ -11,6 +11,8 @@ import { Fragment, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { Order } from "../../utils/types";
+import { format } from "date-fns";
+import { APP_NAME } from "../../utils/constants";
 
 const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
   const invoiceRef = useRef(null);
@@ -36,27 +38,23 @@ const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
   return (
     <Box>
       <Box id="invoice" pt={8} ref={invoiceRef}>
-        <Heading textAlign="center">Invoice</Heading>
-        <Box px="3rem" pt={8} pb={3}>
-          <Flex flexDir="column" justify="space-between" h="10rem">
+        <Heading textAlign="center">Invoice #{orderDetails.invoiceId}</Heading>
+        <Box px="3rem" pt="2.5rem">
+          <Flex flexDir="row" justify="space-between">
             <Box>
               <Flex mb={2}>
                 <Text fontWeight={600}>Date:&nbsp;</Text>
                 <Text>
-                  {new Date(orderDetails.createdAt).toLocaleDateString()}
+                  {format(new Date(orderDetails.createdAt), "dd MMM yyyy")}
                 </Text>
               </Flex>
               <Flex>
-                <Text fontWeight={600}>Invoice Number:&nbsp;</Text>
-                <Text>{orderDetails.invoiceId}</Text>
+                <Text fontWeight={600}>From:&nbsp;</Text>
+                <Text>{APP_NAME}</Text>
               </Flex>
             </Box>
-            <Flex>
-              <Text fontWeight={600}>From:&nbsp;</Text>
-              <Text>Chapman Laundry Service</Text>
-            </Flex>
-            <Flex justify="space-between">
-              <Flex>
+            <Flex flexDir="column">
+              <Flex mb={2}>
                 <Text fontWeight={600}>Recipient:&nbsp;</Text>
                 <Text>{`${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`}</Text>
               </Flex>
@@ -66,7 +64,7 @@ const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
               </Flex>
             </Flex>
           </Flex>
-          <Box mt={8}>
+          <Box mt="3.5rem">
             <Grid
               textAlign="center"
               templateColumns="repeat(4, 1fr)"
@@ -146,7 +144,7 @@ const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
                 <Text></Text>
               </GridItem>
             </Grid>
-            <Flex justify="space-between" px="1rem">
+            <Flex justify="space-between" align="flex-end" px="1rem">
               <Box fontSize="14px">
                 <Text fontWeight={700} mb={2}>
                   Payment Details
@@ -155,25 +153,11 @@ const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
                   <Text fontWeight={600}>Momo:&nbsp;</Text>
                   <Text>0556512345</Text>
                 </Flex>
-                <Flex>
-                  <Text fontWeight={600}>Bank:&nbsp;</Text>
-                  <Text>Fidelity Bank</Text>
-                </Flex>
-                <Flex>
-                  <Text fontWeight={600}>Branch:&nbsp;</Text>
-                  <Text>Kejetia</Text>
-                </Flex>
-                <Flex>
-                  <Text fontWeight={600}>Account Name:&nbsp;</Text>
-                  <Text>Chapman Prestige Limited</Text>
-                </Flex>
-                <Flex>
-                  <Text fontWeight={600}>Account Number:&nbsp;</Text>
-                  <Text>001590412345</Text>
-                </Flex>
               </Box>
               <Box mt="4rem" borderBottom="2px dashed">
-                <Text>Signature</Text>
+                <Text mb={8} fontSize="0.8rem" fontWeight={600}>
+                  Signature
+                </Text>
               </Box>
             </Flex>
           </Box>
@@ -198,7 +182,7 @@ const Invoice = ({ orderDetails }: { orderDetails: Order }) => {
           </Box>
         </Box>
       </Box>
-      <Flex mb={10} mt={2} justifyContent="flex-end" mr="3rem">
+      <Flex mb={10} mt={4} justifyContent="flex-end" mr="3rem">
         <Button
           bgColor="#43BE57"
           _hover={{ bgColor: "#007B23" }}

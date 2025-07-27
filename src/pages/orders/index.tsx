@@ -7,12 +7,13 @@ import {
   InputGroup,
   InputLeftElement,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import CreateOrder from "./CreateOrder";
 import ViewOrder from "./ViewOrder";
 import EditOrder from "./EditOrder";
 import ViewInvoice from "./ViewInvoice";
-import { SearchIcon } from "@chakra-ui/icons";
+import { InfoIcon, SearchIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Link, useNavigate } from "react-router-dom";
@@ -52,6 +53,28 @@ const Orders = () => {
       id: "total",
       cell: (info) => `GH₵${info.getValue()}`,
       header: "Total Amount",
+    }),
+    columnHelper.accessor("payments", {
+      id: "amountPaid",
+      cell: (info) => {
+        const amountPaid = info
+          .getValue()
+          .reduce((acc, curr) => acc + curr.amount, 0);
+        return (
+          <Flex flexDir="row" textAlign="center" alignItems="center">
+            GH₵{amountPaid}
+            <Tooltip
+              label={`Amount Due: GH₵${
+                info.row.original.totalAmount - amountPaid
+              }`}
+              placement="top"
+            >
+              <InfoIcon ml={1} boxSize="12px" color="#43BE57" />
+            </Tooltip>
+          </Flex>
+        );
+      },
+      header: "Amount Paid",
     }),
     columnHelper.accessor("orderStatus", {
       id: "orderStatus",

@@ -1,6 +1,5 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
   Button,
   Flex,

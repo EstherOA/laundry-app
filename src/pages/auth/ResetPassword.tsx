@@ -19,8 +19,9 @@ import CustomerSvg from "../../assets/customer.svg";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Form, Formik, Field } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { APP_NAME } from "../../utils/constants";
 
 interface ResetPasswordFormValues {
   newPassword: string;
@@ -41,6 +42,9 @@ const validationSchema = Yup.object({
 const ResetPassword = () => {
   const toast = useToast();
   const navigate = useNavigate();
+  const {
+    state: { phoneNumber },
+  } = useLocation();
   const [showPassword, setShowPassword] = useState(false);
 
   const initialValues: ResetPasswordFormValues = {
@@ -50,7 +54,6 @@ const ResetPassword = () => {
   };
 
   const handleSubmit = async (values: any, actions: any) => {
-    console.log("values:", values);
     toast({
       description: "Password Updated Successfully",
       position: "top-right",
@@ -74,7 +77,7 @@ const ResetPassword = () => {
           alignItems="center"
           gap="2.5em"
         >
-          <Text>Laundry Logo</Text>
+          <Text>{APP_NAME}</Text>
           <Text textStyle="h1" fontWeight={500}>
             Laundry Management System
           </Text>
@@ -89,7 +92,7 @@ const ResetPassword = () => {
             </Heading>
             <Flex mb="1.5em" justify="center">
               <Text>A code has been sent to&nbsp;</Text>
-              <Text fontWeight={600}>0551234567</Text>
+              <Text fontWeight={600}>{phoneNumber}</Text>
             </Flex>
             <Formik
               initialValues={initialValues}
@@ -111,7 +114,7 @@ const ResetPassword = () => {
                         >
                           Enter OTP
                         </FormLabel>
-                        <Input {...field} id="otp" placeholder="020 123 4567" />
+                        <Input {...field} id="otp" placeholder="12345" />
                         <FormErrorMessage>{errors.otp}</FormErrorMessage>
                       </FormControl>
                     )}
@@ -187,7 +190,18 @@ const ResetPassword = () => {
                       </FormControl>
                     )}
                   </Field>
-                  <Flex>
+                  <Flex align="center">
+                    <Button
+                      onClick={() => navigate(-1)}
+                      color="white"
+                      bgColor="#1A7DDB"
+                      isLoading={isSubmitting}
+                      w="150px"
+                      mr="1em"
+                      _hover={{ bgColor: "#255DEF" }}
+                    >
+                      Back
+                    </Button>
                     <Button
                       type="submit"
                       color="white"

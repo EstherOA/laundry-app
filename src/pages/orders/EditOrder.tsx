@@ -21,6 +21,7 @@ import {
   Order,
   OrderFormValues,
   OrderItem,
+  OrderStatus,
   Payment,
   Service,
   Staff,
@@ -289,7 +290,11 @@ const EditOrder = () => {
   const [items, setItems] = useState<OrderItem[]>(orderDetails.items);
   const [order, setOrder] = useState<Order>(orderDetails);
 
-  const initialValues: OrderFormValues = {
+  type EditOrderFormValues = OrderFormValues & {
+    orderStatus: OrderStatus;
+  };
+
+  const initialValues: EditOrderFormValues = {
     ...order,
     customerFirstName: order.customer.firstName,
     customerLastName: order.customer.lastName,
@@ -304,7 +309,7 @@ const EditOrder = () => {
   const paymentColumns = [
     columnHelper.accessor("paymentId", {
       id: "id",
-      cell: (info) => info.getValue(),
+      cell: (info) => `#${info.getValue()}`,
       header: "Payment ID",
     }),
     columnHelper.accessor("mode", {
@@ -314,7 +319,7 @@ const EditOrder = () => {
     }),
     columnHelper.accessor("amount", {
       id: "amount",
-      cell: (info) => info.getValue(),
+      cell: (info) => `GH₵${info.getValue()}`,
       header: "Amount",
     }),
     columnHelper.accessor("sender", {
@@ -433,7 +438,6 @@ const EditOrder = () => {
           deliveryNotes: values.deliveryNotes,
           landmark: values.landmark,
         },
-        orderStatus: "pending",
         recordedBy: {
           name: `${user.firstName} ${user.lastName}`,
           staffId: user._id,
@@ -492,8 +496,7 @@ const EditOrder = () => {
           }}
           cursor="pointer"
         />
-        <Text textStyle="h1">Edit Order #{order._id}</Text>
-        <CustomBadge title={order.orderStatus} withDot badgeStyle={{ ml: 4 }} />
+        <Text textStyle="h1">Edit Order #{order.orderId}</Text>
       </Flex>
       <Text textAlign="center" textStyle="h2" mb="32px">
         Order Details
@@ -522,7 +525,7 @@ const EditOrder = () => {
         />
       </Flex>
       <Formik
-        initialValues={initialValues as OrderFormValues}
+        initialValues={initialValues as EditOrderFormValues}
         validationSchema={orderMainSchema}
         onSubmit={handleSubmit}
       >
@@ -604,6 +607,45 @@ const EditOrder = () => {
                         h="32px"
                       />
                       <FormErrorMessage>{errors.dueDate}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
+                <Field name="orderStatus">
+                  {({ field }: any) => (
+                    <FormControl
+                      isInvalid={!!(errors.orderStatus && touched.orderStatus)}
+                    >
+                      <FormLabel
+                        htmlFor="orderStatus"
+                        fontSize="10px"
+                        textStyle="formLabel"
+                      >
+                        Order Status
+                      </FormLabel>
+                      <Select
+                        {...field}
+                        h="32px"
+                        fontSize="14px"
+                        id="orderStatus"
+                        placeholder="Select order status"
+                      >
+                        <option key="pending" value="pending">
+                          Pending
+                        </option>
+                        <option key="complete" value="complete">
+                          Complete
+                        </option>
+                        <option key="cancelled" value="cancelled">
+                          Cancelled
+                        </option>
+                        <option key="overdue" value="overdue">
+                          Overdue
+                        </option>
+                        <option key="almost-due" value="almost-due">
+                          Almost Due
+                        </option>
+                      </Select>
+                      <FormErrorMessage>{errors.orderStatus}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>
@@ -774,6 +816,7 @@ const EditOrder = () => {
           await updateOrder();
           onClose();
         }}
+        orderDetails={order}
       />
     </Box>
   );
