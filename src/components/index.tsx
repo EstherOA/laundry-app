@@ -1,5 +1,12 @@
 export { default as Layout } from "./layout";
-export { RevenueChart, OrderStatusChart, InventoryStatusChart } from "./charts";
+export {
+  RevenueChart,
+  OrderStatusChart,
+  InventoryStatusChart,
+  StaffChart,
+  CustomerChart,
+  InventoryMonthlyChart,
+} from "./charts";
 export { default as ProtectedRoute } from "./protected";
 export { default as FileUpload } from "./upload";
 export { default as Invoice } from "./invoice";

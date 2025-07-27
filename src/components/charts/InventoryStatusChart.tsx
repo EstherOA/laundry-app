@@ -11,6 +11,8 @@ import {
   Cell,
 } from "recharts";
 import { useInventorySummary } from "../../hooks/useInventory";
+import { useInventoryMonthlyStats } from "../../hooks";
+import { LineChart, Line } from "recharts";
 
 const statusColorMap: Record<string, string> = {
   "in-stock": "#81C784", // Light Green

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import inventoryApi from "../api/inventory";
 import { InventoryFormValues, Inventory } from "../utils/types";
+import { subMonths, format, startOfMonth, isAfter } from "date-fns";
 
 // Query hook to get all inventory items
 export const useInventory = () => {
@@ -83,4 +84,40 @@ export const useInventorySummary = () => {
     })) || [];
 
   return { summary, isLoading, error };
+};
+
+const getLast6Months = () => {
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const date = subMonths(new Date(), i);
+    months.push(format(date, "MMM yyyy"));
+  }
+  return months;
+};
+
+export const useInventoryMonthlyStats = () => {
+  const { data: inventory, isLoading, error } = useInventory();
+  const months = getLast6Months();
+  // Get all unique item names
+  const itemNames: string[] = Array.from(
+    new Set((inventory || []).map((item: any) => item.itemName))
+  );
+  const stats = months.map((monthLabel, idx) => {
+    const monthStart = startOfMonth(subMonths(new Date(), 5 - idx));
+    const nextMonthStart =
+      idx < 5 ? startOfMonth(subMonths(new Date(), 4 - idx)) : new Date();
+    const entry: any = { month: monthLabel };
+    itemNames.forEach((itemName) => {
+      entry[itemName] = (inventory || []).filter((item: any) => {
+        const date = new Date(item.datePurchased || item.createdAt);
+        return (
+          item.itemName === itemName &&
+          isAfter(date, monthStart) &&
+          (idx === 5 ? date <= nextMonthStart : date < nextMonthStart)
+        );
+      }).length;
+    });
+    return entry;
+  });
+  return { stats, isLoading, error, itemNames };
 };

@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { APP_NAME } from "../../utils/constants";
 import { useEditStaff, useUser } from "../../hooks";
+import { useLogout } from "../../hooks/useSession";
 
 interface ResetPasswordFormValues {
   newPassword: string;
@@ -48,6 +49,7 @@ const ResetPassword = () => {
   } = useLocation();
   const user = useUser();
   const { mutateAsync: editUser } = useEditStaff();
+  const logout = useLogout();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -218,7 +220,10 @@ const ResetPassword = () => {
                   </Field>
                   <Flex align="center">
                     <Button
-                      onClick={() => navigate(-1)}
+                      onClick={() => {
+                        navigate(-1);
+                        logout();
+                      }}
                       color="white"
                       bgColor="#1A7DDB"
                       isLoading={isSubmitting}

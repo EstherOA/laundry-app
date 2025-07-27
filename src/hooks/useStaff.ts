@@ -1,7 +1,46 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import staffApi from "../api/staff";
 import { StaffFormValues } from "../utils/types";
-import { useUser } from "./useSession";
+import { useUser, useToken } from "./useSession";
+import { subMonths, format, startOfMonth, isAfter } from "date-fns";
+
+// Helper to get last 6 months labels
+const getLast6Months = () => {
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const date = subMonths(new Date(), i);
+    months.push(format(date, "MMM yyyy"));
+  }
+  return months;
+};
+
+export const useStaffStats = () => {
+  const token = useToken();
+  return useQuery({
+    queryKey: ["staffStats"],
+    queryFn: async () => {
+      const staffList = await staffApi.getStaff(token!);
+      const months = getLast6Months();
+      let runningTotal = 0;
+      const monthCounts = months.map((monthLabel, idx) => {
+        const monthStart = startOfMonth(subMonths(new Date(), 5 - idx));
+        const nextMonthStart =
+          idx < 5 ? startOfMonth(subMonths(new Date(), 4 - idx)) : new Date();
+        const newCount = staffList.filter((staff: any) => {
+          const created = new Date(staff.createdAt);
+          return (
+            isAfter(created, monthStart) &&
+            (idx === 5 ? created <= nextMonthStart : created < nextMonthStart)
+          );
+        }).length;
+        runningTotal += newCount;
+        return { month: monthLabel, new: newCount, total: runningTotal };
+      });
+      return monthCounts;
+    },
+    enabled: !!token,
+  });
+};
 
 // Query hook to get all staff
 export const useStaff = () => {

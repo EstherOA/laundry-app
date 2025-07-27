@@ -5,6 +5,7 @@ export {
   useAddStaff,
   useEditStaff,
   useDeleteStaff,
+  useStaffStats,
 } from "./useStaff";
 export {
   useOrders,
@@ -21,6 +22,7 @@ export {
   useAddCustomer,
   useEditCustomer,
   useDeleteCustomer,
+  useCustomerStats,
 } from "./useCustomers";
 export {
   useInventory,
@@ -28,6 +30,7 @@ export {
   useAddInventoryItem,
   useEditInventoryItem,
   useDeleteInventoryItem,
+  useInventoryMonthlyStats,
 } from "./useInventory";
 export {
   useServices,
